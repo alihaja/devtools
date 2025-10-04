@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevWeb Tools</title>
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <!-- Sidebar Overlay for mobile -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+
+<!-- Sidebar -->
+<aside id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <h2>DevWeb Tools</h2>
+    <button id="sidebarToggle" class="toggle-btn">☰</button>
+  </div>
+  <div class="menu">
+    <button class="menu-link active" data-tab="json">JSON</button>
+    <button class="menu-link" data-tab="compare">Compare</button>
+    <button class="menu-link" data-tab="encoder">Encoder</button>
+    <button class="menu-link" data-tab="converter">Converter</button>
+    <button class="menu-link" data-tab="format">Format</button>
+    <button class="menu-link" data-tab="uuid">Generator</button>
+    <button class="menu-link" data-tab="regex">Tester</button>
+    <button class="menu-link" data-tab="cron">Cron</button>
+    <button class="menu-link" data-tab="jwt">JWT</button>
+    <button class="menu-link" data-tab="yaml">YAML/JSON</button>
+    <button class="menu-link" data-tab="time">Time</button>
+    <button class="menu-link" data-tab="textutils">Text Utils</button>
+    <button class="menu-link" data-tab="color">Color</button>
+    <button class="menu-link" data-tab="stringinfo">String</button>
+    <button class="menu-link" data-tab="misc">Misc</button>
+  </div>
+  <div class="sidebar-footer">
+    <button id="darkToggle" class="toggle-btn">🌙</button>
+  </div>
+</aside>
+
+
+
+
+
+<!-- <div class="layout">
+  <aside id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <h2>DevWeb Tools</h2>
+    <button id="sidebarToggle" class="toggle-btn">☰</button>
+  </div>
+  <div class="menu">
+      <button class="menu-link active" data-tab="json">JSON</button>
+      <button class="menu-link" data-tab="compare">Compare</button>
+      <button class="menu-link" data-tab="encoder">Encoder</button>
+      <button class="menu-link" data-tab="converter">Converter</button>
+	  <button class="menu-link" data-tab="format">Format</button>
+      <button class="menu-link" data-tab="uuid">Generator</button>
+      <button class="menu-link" data-tab="regex">Tester</button>
+
+		<button class="menu-link" data-tab="cron">Cron</button>
+		<button class="menu-link" data-tab="jwt">JWT</button>
+		<button class="menu-link" data-tab="yaml">YAML/JSON</button>
+		<button class="menu-link" data-tab="time">Time</button>
+		<button class="menu-link" data-tab="textutils">Text Utils</button>
+		<button class="menu-link" data-tab="color">Color</button>
+		<button class="menu-link" data-tab="stringinfo">String</button>
+		<button class="menu-link" data-tab="misc">Misc</button>
+  </div>
+  <div class="sidebar-footer">
+    <button id="darkToggle" class="toggle-btn">🌙</button>
+  </div>
+</aside> -->
+
+
+
+
+
+
+
+  <!-- Main content -->
+  <main class="content">
+
+    <!-- JSON Tools -->
+    <section id="json" class="tab-content active">
+      <h2>JSON Tools</h2>
+      <div class="textarea-container">
+        <textarea id="inputJson" placeholder="Paste JSON here..."></textarea>
+      </div>
+      <div class="button-group">
+        <button onclick="beautifyJson()">Beautify</button>
+        <button onclick="minifyJson()">Minify</button>
+        <button onclick="tryParseToOutput()">Tree View</button>
+        <button onclick="clearJson()">Clear</button>
+      </div>
+    <div class="textarea-container">
+		<textarea id="outputJson" placeholder="Output..."></textarea>
+		<button class="copy-btn" onclick="copyToClipboard('outputJson', this)">📋</button>
+	</div>
+	<div id="treeView" class="box-output mono"></div>
+
+    </section>
+
+    <!-- Compare Tools -->
+    <section id="compare" class="tab-content">
+      <h2>Compare Tools</h2>
+
+      <div class="form-options">
+        <label><input type="checkbox" id="caseSensitiveText"> Case sensitive</label>
+        <label><input type="checkbox" id="onlyDiff"> Show only differences</label>
+        <label>
+          Compare Type:
+          <select id="compareType">
+            <option value="text">Text (Per Line)</option>
+            <option value="sp">SP / Query</option>
+            <option value="json">JSON (Per Value)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="two-col">
+        <div class="textarea-container">
+          <textarea id="compareInput1" placeholder="Enter first text..."></textarea>
+        </div>
+        <div class="textarea-container">
+          <textarea id="compareInput2" placeholder="Enter second text..."></textarea>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="runCompare()">Compare</button>
+        <button onclick="clearCompare()">Clear</button>
+      </div>
+
+    <div id="compareResult" class="box-output mono"></div>
+	<button class="copy-btn" onclick="copyToClipboard('compareResult', this)">📋</button>
+
+    </section>
+
+    <!-- Encoder -->
+    <section id="encoder" class="tab-content">
+      <h2>Encoder / Decoder</h2>
+      <div class="textarea-container">
+        <textarea id="encoderInput" placeholder="Enter text..."></textarea>
+      </div>
+      <div class="button-group">
+        <button onclick="base64Encode()">Base64 Encode</button>
+        <button onclick="base64Decode()">Base64 Decode</button>
+        <button onclick="clearEncoder()">Clear</button>
+      </div>
+      <textarea id="encoderOutput" placeholder="Output..."></textarea>
+	  <button class="copy-btn" onclick="copyToClipboard('encoderOutput', this)">📋</button>
+    </section>
+
+    <!-- Converter -->
+    <section id="converter" class="tab-content">
+      <h2>Converter</h2>
+      <textarea id="converterInput" placeholder="Enter text..."></textarea>
+      <div class="button-group">
+        <button onclick="urlEncode()">URL Encode</button>
+        <button onclick="urlDecode()">URL Decode</button>
+        <button onclick="clearConverter()">Clear</button>
+      </div>
+      <textarea id="converterOutput" placeholder="Output..."></textarea>
+	  <button class="copy-btn" onclick="copyToClipboard('converterOutput', this)">📋</button>
+    </section>
+
+	
+    <!-- Format -->
+    <section id="format" class="tab-content">
+      <h2>Format</h2>
+		<textarea id="convInput"></textarea>
+		<button onclick="uiCsvToJson('convInput','convOutput')">CSV → JSON</button>
+		<button onclick="uiJsonToCsv('convInput','convOutput')">JSON → CSV</button>
+
+		<button onclick="uiXmlToJson('convInput','convOutput')">XML → JSON</button>
+		<button onclick="uiJsonToXml('convInput','convOutput','root')">JSON → XML</button>
+
+		<button onclick="uiFormat('js','convInput','convOutput')">Format JS</button>
+		<button onclick="uiMinify('js','convInput','convOutput')">Minify JS</button>
+<textarea id="convOutput"></textarea>
+
+	  <button class="copy-btn" onclick="copyToClipboard('converterOutput', this)">📋</button>
+    </section>
+
+    <!-- UUID Generator -->
+    <section id="uuid" class="tab-content">
+      <h2>UUID Generator</h2>
+      <div class="button-group">
+        <button onclick="generateUUID()">Generate</button>
+        <button onclick="clearUUID()">Clear</button>
+      </div>
+      <textarea id="uuidOutput" placeholder="UUID output..."></textarea>
+	  <button class="copy-btn" onclick="copyToClipboard('uuidOutput', this)">📋</button>
+    </section>
+
+    <!-- Regex Tester -->
+		<section id="regex" class="tab-content">
+		<h2>Advanced Regex Tester</h2>
+
+		<div class="regex-inputs">
+			<input id="regexPattern" placeholder="Pattern (e.g. \\w+)" />
+			<input id="regexFlags" placeholder="Flags (e.g. gim)" />
+		</div>
+
+		<textarea id="regexText" placeholder="Enter text to test..."></textarea>
+		<input id="regexReplace" placeholder="Replacement ($1, $2... optional)" />
+
+		<div class="button-group">
+			<button onclick="regexTest()">Test</button>
+			<button onclick="clearRegex()">Clear</button>
+		</div>
+
+		<div id="regexMatches" class="box-output"></div>
+		<div id="regexReplacePreview" class="box-output"></div>
+		<div id="regexGroups" class="box-output"></div>
+		</section>
+
+
+
+
+  <!-- Cron -->
+<section id="cron" class="tab-content">
+  <h2>Cron Parser & Generator</h2>
+
+  <!-- Parser -->
+  <h3>Parse Cron</h3>
+  <textarea id="cronInput" placeholder="*/5 * * * * *"></textarea>
+  <div class="button-group">
+    <button onclick="parseCron()">Parse</button>
+    <button onclick="clearCron()">Clear</button>
+  </div>
+
+  <!-- Generator: Exact DateTime -->
+  <h3>Generate Cron from Exact Date/Time</h3>
+  <input type="datetime-local" id="cronDateTime">
+  <label><input type="checkbox" id="includeSeconds" checked> Include Seconds</label>
+  <label><input type="checkbox" id="includeYear"> Include Year</label>
+  <button onclick="generateCronFromPicker()">Generate Exact Cron</button>
+
+  <!-- Generator: Interval -->
+  <h3>Generate Cron Interval</h3>
+  <label>Every <input type="number" id="intervalSeconds" min="0" placeholder="seconds"> seconds</label>
+  <label>Every <input type="number" id="intervalMinutes" min="0" placeholder="minutes"> minutes</label>
+  <label>Every <input type="number" id="intervalHours" min="0" placeholder="hours"> hours</label>
+  <label>Every <input type="number" id="intervalDays" min="0" placeholder="days"> days</label>
+  <button onclick="generateCronIntervalFromUI()">Generate Interval Cron</button>
+
+  <div id="cronResult" class="box-output mono"></div>
+</section>
+
+
+
+
+
+
+<!-- JWT Tools -->
+<section id="jwt" class="tab-content">
+  <h2>JWT Decoder / Encoder</h2>
+  <textarea id="jwtInput" placeholder="Paste JWT token here"></textarea>
+  
+  <div class="button-group">
+    <button onclick="decodeJWT()">Decode</button>
+    <button onclick="verifyJWT()">Verify (HMAC-SHA256)</button>
+    <button onclick="encodeJWT()">Re-encode</button>
+    <button onclick="clearJWT()">Clear</button>
+  </div>
+
+  <input type="text" id="jwtSecret" placeholder="Secret key (for verify / encode)">
+  <div id="jwtResult" class="box-output mono"></div>
+</section>
+
+
+<!-- YAML / JSON -->
+<section id="yaml" class="tab-content">
+  <h2>YAML ⇆ JSON Converter</h2>
+  <textarea id="yamlInput" placeholder="Paste YAML or JSON"></textarea>
+  <button onclick="yamlToJson()">YAML → JSON</button>
+  <button onclick="jsonToYaml()">JSON → YAML</button>
+  <textarea id="yamlOutput" readonly></textarea>
+  <button class="copy-btn" onclick="copyToClipboard('yamlOutput', this)">📋</button>
+</section>
+
+<!-- Epoch / DateTime -->
+<section id="time" class="tab-content">
+  <h2>Epoch / DateTime Converter</h2>
+  <textarea id="timeInput" placeholder="Epoch or DateTime"></textarea>
+  <button onclick="epochToDate()">Epoch → Date</button>
+  <button onclick="dateToEpoch()">Date → Epoch</button>
+  <div id="timeResult"></div>
+  <button class="copy-btn" onclick="copyToClipboard('timeResult', this)">📋</button>
+</section>
+
+<!-- Text Utilities -->
+<section id="textutils" class="tab-content">
+  <h2>Text Utilities</h2>
+  <textarea id="textUtilsInput" placeholder="Enter text here"></textarea>
+  <div>
+    <button onclick="toUpper()">UPPERCASE</button>
+    <button onclick="toLower()">lowercase</button>
+    <button onclick="toSnake()">snake_case</button>
+    <button onclick="toPascal()">PascalCase</button>
+    <button onclick="sortLines()">Sort Lines</button>
+    <button onclick="uniqueLines()">Remove Duplicates</button>
+  </div>
+  <textarea id="textUtilsOutput" readonly></textarea>
+  <button class="copy-btn" onclick="copyToClipboard('textUtilsOutput', this)">📋</button>
+</section>
+
+<!-- Color Tools -->
+<section id="color" class="tab-content">
+  <h2>Color Tools</h2>
+  <input type="text" id="colorInput" placeholder="#ff0000 or rgb(255,0,0)">
+  <button onclick="convertColor()">Convert</button>
+  <div id="colorResult"></div>
+</section>
+
+<!-- String Inspector -->
+<section id="stringinfo" class="tab-content">
+  <h2>String Inspector</h2>
+  <textarea id="stringInput" placeholder="Enter text here"></textarea>
+  <button onclick="inspectString()">Inspect</button>
+  <div id="stringResult"></div>
+  <button class="copy-btn" onclick="copyToClipboard('stringResult', this)">📋</button>
+</section>
+
+
+
+    <!-- Misc -->
+    <!-- <section id="misc" class="tab-content">
+      <h2>Hash Generator (SHA256)</h2>
+      <textarea id="hashInput" placeholder="Enter text..."></textarea>
+      <div class="button-group">
+        <button onclick="sha256Hash()">Generate</button>
+        <button onclick="clearMisc()">Clear</button>
+      </div>
+      <textarea id="hashOutput" placeholder="Output..."></textarea>
+    </section> -->
+
+	<!-- Misc Tools -->
+<section id="misc" class="tab-content">
+  <h2>Misc Tools</h2>
+<br>
+  <!-- Hash Generator -->
+  <div class="box">
+    <h3>Hash Generator</h3>
+    <textarea id="hashInput" placeholder="Enter text to hash..."></textarea>
+    <label for="hashAlgo">Algorithm:</label>
+    <select id="hashAlgo">
+      <option value="md5">MD5</option>
+      <option value="sha1">SHA-1</option>
+      <option value="sha256" selected>SHA-256</option>
+      <option value="sha512">SHA-512</option>
+      <option value="crc32">CRC32</option>
+      <option value="hmac">HMAC (with key)</option>
+    </select>
+    <input type="text" id="hmacKey" placeholder="Secret key (for HMAC)" style="display:none">
+    <div class="button-group">
+      <button onclick="generateHash()">Generate</button>
+      <button onclick="clearMisc()">Clear</button>
+    </div>
+    <textarea id="hashOutput" placeholder="Output hash..."></textarea>
+	<button class="copy-btn" onclick="copyToClipboard('hashOutput', this)">📋</button>
+  </div>
+
+
+  <br>
+
+  <!-- String Converter -->
+  <div class="box">
+    <h3>String Converter</h3>
+    <textarea id="strConvInput" placeholder="Enter text to convert..."></textarea>
+    <div class="button-group">
+      <button onclick="toBase64()">To Base64</button>
+      <button onclick="fromBase64()">From Base64</button>
+      <button onclick="toHex()">To Hex</button>
+      <button onclick="fromHex()">From Hex</button>
+      <button onclick="toBinary()">To Binary</button>
+      <button onclick="fromBinary()">From Binary</button>
+      <button onclick="clearStringConv()">Clear</button>
+    </div>
+    <textarea id="strConvOutput" placeholder="Result..."></textarea>
+  </div>
+</section>
+
+
+  </main>
+
+
+  <script src="./js/index.js"></script>
+
+  <!-- yaml json v4.1.1 -->
+  <script src="./js/component/js-yaml.min.js"></script>
+
+   <script src="./js/component/hash-fallback.js"></script>
+
+   <script src="./js/component/formatter.js"></script>
+</body>
+</html>
