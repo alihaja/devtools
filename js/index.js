@@ -214,8 +214,10 @@ window.clearJson = function () {
    COMPARE TOOLS (JSON table + text highlight)
 ====================================================== */
 window.runCompare = function () {
-  const a = $("compareInput1").value || "";
-  const b = $("compareInput2").value || "";
+  var a = $("compareInput1").value || "";
+  var b = $("compareInput2").value || "";
+  a = caseSensitive ? a : a.toLowerCase();
+  b = caseSensitive ? b : b.toLowerCase();
   const type = $("compareType").value;
   const caseSensitive = !!$("caseSensitiveText").checked;
   const onlyDiff = !!$("onlyDiff").checked;
