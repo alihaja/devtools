@@ -596,36 +596,60 @@ function sha256Fallback(ascii) {
 ====================================================== */
 
 /* Sidebar Toggle Universal */
-document.addEventListener('DOMContentLoaded', () => {
-  const sidebar = document.getElementById('sidebar');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
+(function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const toggleBtn = document.getElementById("sidebarToggle");
 
-  if (!sidebar || !sidebarToggle || !sidebarOverlay) return;
+  if (!sidebar || !toggleBtn) return;
 
-  const isMobile = () => window.innerWidth <= 900;
+  // Handle desktop collapse
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    document.body.classList.toggle("sidebar-collapsed");
 
-  sidebarToggle.addEventListener('click', () => {
-    if (isMobile()) {
-      sidebar.classList.toggle('open');
-      sidebarOverlay.classList.toggle('active');
-    } else {
-      sidebar.classList.toggle('collapsed');
+    // Optional: close all details when collapsed
+    if (sidebar.classList.contains("collapsed")) {
+      sidebar.querySelectorAll("details").forEach(d => d.removeAttribute("open"));
     }
   });
 
-  sidebarOverlay.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-    sidebarOverlay.classList.remove('active');
+  // Handle mobile overlay
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("show");
   });
 
-  window.addEventListener('resize', () => {
-    if (!isMobile()) {
-      sidebar.classList.remove('open');
-      sidebarOverlay.classList.remove('active');
-    }
+  // Auto close sidebar on tab change (for mobile)
+  document.querySelectorAll(".menu-link").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (window.innerWidth < 900) {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("show");
+      }
+    });
   });
-});
+})();
+
+// ================================
+// Sidebar Menu Group Toggle
+// ================================
+(function() {
+  document.querySelectorAll('.menu-group-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const group = header.parentElement;
+      group.classList.toggle('open');
+
+      // Smooth animation
+      const content = group.querySelector('.menu-group-content');
+      if (group.classList.contains('open')) {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      } else {
+        content.style.maxHeight = null;
+      }
+    });
+  });
+})();
 
 
 
@@ -1089,6 +1113,310 @@ window.convertColor = () => {
   $("colorResult").style.padding = "10px";
 };
 
+
+// ==========================
+// Color Tools JS
+// ==========================
+
+// Convert color input to Hex, RGB, HSL
+function convertColor() {
+  const input = document.getElementById('colorInput').value.trim();
+  const resultEl = document.getElementById('colorResult');
+  resultEl.innerHTML = '';
+
+  const rgb = parseColor(input);
+  if (!rgb) {
+    resultEl.textContent = 'Invalid color!';
+    return;
+  }
+
+  const hex = rgbToHex(...rgb);
+  const hsl = rgbToHsl(...rgb);
+
+  resultEl.innerHTML = `
+    <div style="margin-bottom:8px;">Hex: <span>${hex}</span></div>
+    <div style="margin-bottom:8px;">RGB: <span>${rgb.join(', ')}</span></div>
+    <div>HSL: <span>${hsl.join(', ')}</span></div>
+  `;
+}
+
+// ==========================
+// Palette Generator
+// ==========================
+
+const paletteModes = ['base','complementary','analogous','triadic','tetradic','shades'];
+
+// Convert color input to Hex, RGB, HSL
+function convertColor() {
+  const input = document.getElementById('colorInput').value.trim();
+  const resultEl = document.getElementById('colorResult');
+  resultEl.innerHTML = '';
+
+  const rgb = parseColor(input);
+  if (!rgb) {
+    resultEl.textContent = 'Invalid color!';
+    return;
+  }
+
+  const hex = rgbToHex(...rgb);
+  const hsl = rgbToHsl(...rgb);
+
+  resultEl.innerHTML = `
+    <div>Hex: <span>${hex}</span></div>
+    <div>RGB: <span>${rgb.join(', ')}</span></div>
+    <div>HSL: <span>${hsl.join(', ')}</span></div>
+  `;
+}
+
+// ==========================
+// Generate Advanced Palette
+// ==========================
+// Global untuk simpan warna terakhir yang di-generate
+let generatedPalette = [];
+
+// Generate palette advanced
+function generatePalette() {
+  const input = document.getElementById('colorInput').value.trim();
+  const resultEl = document.getElementById('colorGradient');
+  resultEl.innerHTML = '';
+  generatedPalette = []; // reset
+
+  const rgb = parseColor(input);
+  if (!rgb) {
+    resultEl.textContent = 'Invalid color!';
+    return;
+  }
+
+  paletteModes.forEach(mode => {
+    const colors = getPalette(rgb, mode);
+    generatedPalette.push(...colors.map(c => rgbToHex(...c))); // simpan semua ke global
+
+    // Container per mode
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexWrap = 'wrap';
+    container.style.alignItems = 'center';
+    container.style.marginBottom = '12px';
+    container.style.gap = '6px';
+
+    const label = document.createElement('span');
+    label.textContent = mode + ':';
+    label.style.fontWeight = '600';
+    label.style.marginRight = '6px';
+    container.appendChild(label);
+
+    // Swatches
+    colors.forEach(c => {
+      const hex = rgbToHex(...c);
+      const swatch = document.createElement('div');
+      swatch.className = 'palette-swatch';
+      swatch.style.backgroundColor = hex;
+      swatch.title = hex;
+      swatch.style.width = '40px';
+      swatch.style.height = '40px';
+      swatch.style.cursor = 'pointer';
+      swatch.style.border = '1px solid #aaa';
+      swatch.style.borderRadius = '4px';
+      swatch.onclick = () => copyToClipboardColor(hex);
+      container.appendChild(swatch);
+    });
+
+    // Optional gradient preview
+    const gradient = document.createElement('div');
+    gradient.style.flex = '1';
+    gradient.style.height = '24px';
+    gradient.style.borderRadius = '4px';
+    gradient.style.marginLeft = '6px';
+    gradient.style.background = `linear-gradient(to right, ${colors.map(c => rgbToHex(...c)).join(',')})`;
+    container.appendChild(gradient);
+
+    resultEl.appendChild(container);
+  });
+}
+
+// ==========================
+// Helpers
+// ==========================
+
+// Parse input color string → [r,g,b]
+function parseColor(str) {
+  const div = document.createElement('div');
+  div.style.color = str;
+  document.body.appendChild(div);
+  const cs = getComputedStyle(div).color;
+  document.body.removeChild(div);
+  const match = cs.match(/\d+/g);
+  return match ? match.map(Number) : null;
+}
+
+// RGB to Hex
+function rgbToHex(r,g,b){
+  r = Math.round(Math.min(Math.max(r,0),255));
+  g = Math.round(Math.min(Math.max(g,0),255));
+  b = Math.round(Math.min(Math.max(b,0),255));
+  return "#" + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+
+// RGB to HSL
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0, s=0, l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    s=l>0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max){
+      case r: h=(g-b)/d+(g<b?6:0); break;
+      case g: h=(b-r)/d+2; break;
+      case b: h=(r-g)/d+4; break;
+    }
+    h*=60;
+  }
+  return [h, s, l]; // angka murni 0–1
+}
+
+
+// Generate palette by mode
+function getPalette([r,g,b], mode='base') {
+  const base = [r,g,b];
+  switch(mode){
+    case 'base': return [base];
+    case 'complementary': return [base, [(r+180)%256,(g+180)%256,(b+180)%256]];
+    case 'analogous': return [base, [(r+30)%256,(g+30)%256,(b+30)%256], [(r-30+256)%256,(g-30+256)%256,(b-30+256)%256]];
+    case 'triadic': return [base, [(r+120)%256,(g+120)%256,(b+120)%256], [(r+240)%256,(g+240)%256,(b+240)%256]];
+    case 'tetradic': return [base, [(r+90)%256,(g+90)%256,(b+90)%256], [(r+180)%256,(g+180)%256,(b+180)%256], [(r+270)%256,(g+270)%256,(b+270)%256]];
+    case 'shades': return Array.from({length:5}, (_,i)=>base.map(x=>Math.max(0, x-i*30)));
+    default: return [base];
+  }
+}
+
+// Copy to clipboard
+function copyToClipboardColor(color){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(color).then(()=>showToast(color+' copied!'))
+      .catch(()=>fallbackCopy(color));
+  } else fallbackCopy(color);
+}
+
+function fallbackCopy(text){
+  const temp = document.createElement('textarea');
+  temp.value = text;
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand('copy');
+  document.body.removeChild(temp);
+  showToast(text+' copied!');
+}
+
+// Toast kecil non-blocking
+function showToast(msg){
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.right = '20px';
+  toast.style.background = 'rgba(0,0,0,0.7)';
+  toast.style.color = '#fff';
+  toast.style.padding = '8px 12px';
+  toast.style.borderRadius = '4px';
+  toast.style.zIndex = 9999;
+  toast.style.fontSize = '13px';
+  toast.style.opacity = '0';
+  toast.style.transition = 'opacity 0.5s';
+
+  document.body.appendChild(toast);
+
+  // Tampilkan toast
+  requestAnimationFrame(()=>toast.style.opacity='1');
+
+  // Tetap 5 detik, lalu hilang
+  setTimeout(()=>{
+    toast.style.opacity='0';
+    toast.addEventListener('transitionend', ()=>{
+      if(toast.parentNode) toast.parentNode.removeChild(toast);
+    });
+  }, 5000); // 5000 ms = 5 detik
+}
+
+// ==========================
+// Interactive Gradient & Export
+// ==========================
+function showGradient(colors) {
+  const gradientEl = document.getElementById('colorGradient');
+  gradientEl.innerHTML = ''; // clear previous
+  const gradientDiv = document.createElement('div');
+  gradientDiv.style.height = '40px';
+  gradientDiv.style.borderRadius = '6px';
+  gradientDiv.style.border = '1px solid #aaa';
+  gradientDiv.style.cursor = 'pointer';
+  
+  const gradientStr = colors.map(c => rgbToHex(...c)).join(', ');
+  gradientDiv.style.background = `linear-gradient(to right, ${gradientStr})`;
+  gradientDiv.title = 'Click to copy CSS gradient';
+  
+  gradientDiv.onclick = () => {
+    copyToClipboardText(`background: linear-gradient(to right, ${gradientStr});`);
+    alert('CSS gradient copied!');
+  };
+
+  gradientEl.appendChild(gradientDiv);
+}
+
+// Generate gradient + swatches together
+function generatePaletteWithGradient() {
+  const input = document.getElementById('colorInput').value.trim();
+  const baseRgb = parseColor(input);
+  if (!baseRgb) return alert('Invalid color!');
+
+  // Example: generate analogous colors for gradient
+  const gradientColors = getPalette(baseRgb, 'analogous');
+  showGradient(gradientColors);
+  
+  // Also show swatches
+  generatePalette();
+}
+
+document.getElementById('downloadPaletteBtn').addEventListener('click', () => {
+  // Ambil warna dari palette yang sudah di-generate
+  const paletteColors = generatedPalette || []; // pastikan `generatedPalette` di-set saat generatePalette()
+  exportPalettePNG(paletteColors);
+});
+
+
+// Optional: export palette as PNG
+function exportPalettePNG(colors){
+  if(!colors || colors.length === 0) return alert('No colors to export!');
+  
+  const canvas = document.createElement('canvas');
+  const pixelSize = 50; // tiap swatch 50px
+  canvas.width = colors.length * pixelSize;
+  canvas.height = pixelSize;
+
+  const ctx = canvas.getContext('2d');
+  colors.forEach((c, i) => {
+    ctx.fillStyle = rgbToHex(...c);
+    ctx.fillRect(i * pixelSize, 0, pixelSize, pixelSize);
+  });
+
+  canvas.toBlob(function(blob){
+    if(blob){
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'palette.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      alert('Failed to generate PNG.');
+    }
+  });
+}
+
+
+
 /* ======================================================
    STRING INSPECTOR (HTTP/HTTPS safe, all browsers)
 ====================================================== */
@@ -1338,3 +1666,135 @@ function clearStringConv() {
 
 
 
+
+/* ======================================================
+   JSON PATH EVALUATOR TOOLS
+====================================================== */
+// JSONPath Evaluator
+function evaluateJsonPath() {
+  const inputEl = document.getElementById('jsonPathInput');
+  const queryEl = document.getElementById('jsonPathQuery');
+  const resultEl = document.getElementById('jsonPathResult');
+
+  let json;
+  try {
+    json = JSON.parse(inputEl.value);
+  } catch (e) {
+    resultEl.value = 'Invalid JSON!';
+    return;
+  }
+
+  const query = queryEl.value.trim();
+  if (!query) {
+    resultEl.value = 'Please enter a JSONPath query.';
+    return;
+  }
+
+  try {
+    const result = jsonPathEvaluate(json, query);
+    resultEl.value = JSON.stringify(result, null, 2);
+  } catch (e) {
+    resultEl.value = 'Error: ' + e.message;
+  }
+}
+
+// Clear JSONPath input/output
+function clearJsonPath() {
+  document.getElementById('jsonPathInput').value = '';
+  document.getElementById('jsonPathQuery').value = '';
+  document.getElementById('jsonPathResult').value = '';
+   const fileInput = document.getElementById('jsonPathFile');
+  if (fileInput) fileInput.value = ''; // reset file input
+}
+
+// Import JSON file
+document.getElementById('jsonPathFile')?.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('jsonPathInput').value = ev.target.result;
+  };
+  reader.readAsText(file);
+});
+
+// Advanced JSONPath evaluator
+function jsonPathEvaluate(obj, path) {
+  if (!path.startsWith('$')) throw new Error('Path must start with $');
+  const result = [];
+
+  function traverse(current, tokens) {
+    if (!current) return;
+    if (tokens.length === 0) {
+      result.push(current);
+      return;
+    }
+
+    const token = tokens.shift();
+
+    // Recursive descent
+    if (token === '..') {
+      if (typeof current === 'object') {
+        for (const key in current) {
+          traverse(current[key], [...tokens]);
+          traverse(current[key], tokens);
+        }
+      }
+      return;
+    }
+
+    // Wildcard *
+    if (token === '*') {
+      if (Array.isArray(current)) {
+        current.forEach(item => traverse(item, [...tokens]));
+      } else if (typeof current === 'object') {
+        Object.values(current).forEach(val => traverse(val, [...tokens]));
+      }
+      return;
+    }
+
+    // Property + optional array index/slice
+    const propMatch = token.match(/^([^\[\]]+)?(\[.*\])?$/);
+    if (propMatch) {
+      const prop = propMatch[1];
+      const arrPart = propMatch[2];
+
+      let next = current;
+      if (prop) next = next[prop];
+
+      if (!arrPart) {
+        traverse(next, tokens);
+        return;
+      }
+
+      // Array index or slice
+      const arrContent = arrPart.slice(1, -1).trim();
+
+      // Slice [start:end]
+      const sliceMatch = arrContent.match(/^(-?\d*):(-?\d*)$/);
+      if (sliceMatch && Array.isArray(next)) {
+        let start = sliceMatch[1] === '' ? 0 : parseInt(sliceMatch[1]);
+        let end = sliceMatch[2] === '' ? next.length : parseInt(sliceMatch[2]);
+        if (start < 0) start += next.length;
+        if (end < 0) end += next.length;
+        const sliced = next.slice(start, end);
+        sliced.forEach(item => traverse(item, [...tokens]));
+        return;
+      }
+
+      // Single index or comma-separated
+      if (Array.isArray(next)) {
+        const indexes = arrContent.split(',').map(i => parseInt(i.trim()));
+        indexes.forEach(i => {
+          if (!isNaN(i) && next[i] !== undefined) traverse(next[i], [...tokens]);
+        });
+        return;
+      }
+    }
+  }
+
+  // Tokenize path: split by dot, but keep array indices
+  const pathTokens = path.replace(/\['([^']+)'\]/g, '.$1').split('.').filter(Boolean).slice(1);
+  traverse(obj, pathTokens);
+  return result;
+}
