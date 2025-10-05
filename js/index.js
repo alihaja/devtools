@@ -216,8 +216,6 @@ window.clearJson = function () {
 window.runCompare = function () {
   var a = $("compareInput1").value || "";
   var b = $("compareInput2").value || "";
-  a = caseSensitive ? a : a.toLowerCase();
-  b = caseSensitive ? b : b.toLowerCase();
   const type = $("compareType").value;
   const caseSensitive = !!$("caseSensitiveText").checked;
   const onlyDiff = !!$("onlyDiff").checked;
@@ -226,6 +224,8 @@ window.runCompare = function () {
   // ===== JSON TABLE COMPARE =====
   if (type === "json") {
     try {
+      a = caseSensitive ? a : a.toLowerCase();
+      b = caseSensitive ? b : b.toLowerCase();
       const A = JSON.parse(stripJsonComments(a));
       const B = JSON.parse(stripJsonComments(b));
       const rows = [];
