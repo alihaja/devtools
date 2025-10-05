@@ -37,150 +37,332 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
+body.dark-mode .sidebar {
+  background: var(--card-dark);
+  color: var(--text-dark);
+}
+
+body.dark-mode .sidebar h2,
+body.dark-mode .menu-group-header,
+body.dark-mode .menu-link {
+  color: var(--text-dark);
+}
+
+body.dark-mode .menu-group-header:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .menu-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .menu-group.open .menu-group-header::after {
+  color: var(--text-dark);
+}
+
+body.dark-mode .menu-group-header::after {
+  color: var(--text-dark);
+}
+
 /* ============================
    Sidebar - Desktop & Mobile
 ============================ */
 
 /* Desktop default */
 .sidebar {
-  width: 250px;
-  transition: width 0.3s ease, left 0.3s ease;
-  background: var(--card);
-  height: 100vh;
-  flex-shrink: 0;
+  width: 260px;
+  background: var(--sidebar-bg, #f8f9fa);
+  color: var(--text-color, #333);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s;
 }
 
-/* Collapsed Desktop */
 .sidebar.collapsed {
-  width: 60px;
+  width: 65px;
 }
 
-/* Desktop: main content shift */
-.content {
-  flex: 1;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  margin-left: 250px;
-}
-.sidebar.collapsed + .content {
-  margin-left: 60px;
-}
-
-/* Sidebar header */
 .sidebar-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-}
-.sidebar-header h2 {
-  font-size: 18px;
+  align-items: center;
+  padding: 10px;
+  background: var(--header-bg, #e9ecef);
 }
 
-/* Sidebar footer */
+.sidebar h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.menu {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#menuSearch {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 6px;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+#menuSearch:focus {
+  border-color: var(--accent-color, #0078d7);
+}
+
+.menu-group {
+  margin-bottom: 12px;
+}
+
+.menu-group h3 {
+  font-size: 0.85rem;
+  background: var(--bg-muted, #f1f1f1);
+  margin: 6px 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-group h3::after {
+  content: "▸";
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+}
+
+.menu-group.open h3::after {
+  transform: rotate(90deg);
+}
+
+.menu-group button {
+  display: none;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-color, #333);
+  font-size: 0.85rem;
+}
+
+.menu-group.open button {
+  display: block;
+}
+
+.menu-group button:hover,
+.menu-group button.active {
+  background: var(--accent-color, #0078d7);
+  color: #fff;
+}
+
 .sidebar-footer {
-  margin-top: auto;
+  padding: 8px;
+  border-top: 1px solid var(--border-color, #ddd);
   text-align: center;
 }
-.toggle-btn {
-  border: 0;
-  background: var(--primary);
-  color: #fff;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  cursor: pointer;
+
+.sidebar.collapsed .menu-group h3 span,
+.sidebar.collapsed .menu-group button {
+  display: none;
 }
 
-/* ============================
-   Mobile Sidebar
-============================ */
+.sidebar.collapsed #menuSearch {
+  display: none;
+}
+
+.sidebar.collapsed .menu-group h3::after {
+  display: none;
+}
+
+.sidebar.collapsed h2 {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .sidebar {
     position: fixed;
-    top: 0;
-    left: -100%;
-    width: 250px;
-    height: 100%;
     z-index: 1000;
-  }
-
-  .sidebar.open {
-    left: 0;
-  }
-
-  #sidebarToggle {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1100;
-    background: #fff;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.4);
-    z-index: 900;
-  }
-
-  .sidebar-overlay.active {
-    display: block;
-  }
-
-  /* Main content shift removed for mobile */
-  .content {
-    margin-left: 0 !important;
+    height: 100%;
   }
 }
 
 
-
-
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 20px;
-}
-.menu-link {
-  border: 0;
+.sidebar details {
+  margin: 6px 0;
+  border: none;
   background: transparent;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  transition: background 0.2s;
 }
-.menu-link:hover {
-  background: var(--primary);
-  color: #fff;
-}
-.menu-link.active {
-  background: var(--primary);
-  color: #fff;
+
+.sidebar details[open] summary {
+  background: rgba(0, 0, 0, 0.05);
   font-weight: 600;
 }
-.sidebar-footer {
-  margin-top: auto;
-  text-align: center;
-}
-.toggle-btn {
-  border: 0;
-  background: var(--primary);
-  color: #fff;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+
+.sidebar summary {
   cursor: pointer;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: inherit;
+  list-style: none;
+  user-select: none;
 }
+
+.sidebar summary::-webkit-details-marker {
+  display: none; /* Hide default arrow */
+}
+
+/* Add custom arrow */
+.sidebar summary::after {
+  content: "▸";
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+.sidebar details[open] summary::after {
+  transform: rotate(90deg);
+}
+
+/* Menu link inside group */
+.sidebar .menu-link {
+  display: block;
+  padding: 6px 16px;
+  font-size: 0.9em;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar .menu-link:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.sidebar.collapsed details,
+.sidebar.collapsed summary,
+.sidebar.collapsed .menu-link {
+  font-size: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 0;
+  visibility: hidden;
+}
+
+
+.sidebar.collapsed {
+  width: 60px;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header h2,
+.sidebar.collapsed details summary span,
+.sidebar.collapsed .menu-link {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar.collapsed .toggle-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+.menu-group {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.menu-group-header {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.menu-group-header::after {
+  content: "▸";
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.menu-group.open .menu-group-header::after {
+  transform: rotate(90deg);
+}
+
+.menu-group-header:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.menu-group-content {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.25s ease;
+}
+
+.menu-group.open .menu-group-content {
+  max-height: 500px; /* auto via JS */
+}
+
+.sidebar .menu-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 20px;
+  border: none;
+  background: none;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar .menu-link:hover {
+  background: rgba(0,0,0,0.08);
+}
+
+/* Dark mode compatibility */
+body.dark-mode .menu-group-header:hover {
+  background: rgba(255,255,255,0.08);
+}
+body.dark-mode .menu-link:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+
+
+/* Make sure dark mode still works */
+body.dark-mode .sidebar summary {
+  background: rgba(255,255,255,0.05);
+}
+body.dark-mode .sidebar .menu-link:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+
+
+
 
 /* ============================
    Main Content
@@ -455,3 +637,162 @@ body.dark-mode .json-table tr.diff td {
   color: var(--muted);
 }
 body.dark-mode .char-counter { color: #888; }
+
+
+.file-drop-area {
+  border: 2px dashed #aaa;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.file-drop-area.dragover { background-color: #f0f0f0; }
+.file-drop-area input[type=file] {
+  position: absolute;
+  left:0; top:0; width:100%; height:100%;
+  opacity:0; cursor:pointer;
+}
+
+
+
+
+
+
+/* Markdown Preview Styling */
+.markdown-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  height: 70vh;
+}
+
+.markdown-editor,
+.markdown-preview {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.markdown-editor textarea {
+  width: 100%;
+  height: 100%;
+  resize: none;
+  border: none;
+  outline: none;
+  font-family: monospace;
+  background: #fafafa;
+  color: #222;
+}
+
+/* Markdown tables */
+.markdown-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background: #f3f3f3;
+}
+
+/* Markdown Lists Styling */
+.markdown-preview ul,
+.markdown-preview ol {
+  margin: 0 0 10px 20px;
+  padding: 0;
+}
+
+.markdown-preview li {
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+/* Nested lists spacing */
+.markdown-preview li ul,
+.markdown-preview li ol {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+
+/* Copy button on code blocks */
+pre {
+  position: relative;
+  background: #1e1e1e;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: auto;
+}
+
+.copy-btn-code {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: none;
+  background: #0078d4;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.2s;
+}
+
+.copy-btn-code:hover {
+  opacity: 1;
+}
+
+
+
+
+
+
+
+.random-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+}
+
+.random-output {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.random-output input {
+  flex: 1;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.random-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.random-options .checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.random-container button {
+  cursor: pointer;
+}
+
+
