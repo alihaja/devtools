@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DevWeb Tools</title>
   <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/component/github.min.css" />
 </head>
 <body>
 
@@ -14,13 +15,14 @@
 
 
 <!-- Sidebar -->
-<aside id="sidebar" class="sidebar">
+<!-- <aside id="sidebar" class="sidebar">
   <div class="sidebar-header">
     <h2>DevWeb Tools</h2>
     <button id="sidebarToggle" class="toggle-btn">☰</button>
   </div>
   <div class="menu">
     <button class="menu-link active" data-tab="json">JSON</button>
+    <button class="menu-link" data-tab="jsonpath">Json Path</button>
     <button class="menu-link" data-tab="compare">Compare</button>
     <button class="menu-link" data-tab="encoder">Encoder</button>
     <button class="menu-link" data-tab="converter">Converter</button>
@@ -33,13 +35,87 @@
     <button class="menu-link" data-tab="time">Time</button>
     <button class="menu-link" data-tab="textutils">Text Utils</button>
     <button class="menu-link" data-tab="color">Color</button>
+    <button class="menu-link" data-tab="qrcode">QR Generated</button>
+    <button class="menu-link" data-tab="markdown">Markdown</button>
+    <button class="menu-link" data-tab="image-compressor">Image Compress</button>
+    <button class="menu-link" data-tab="gzip">gzip</button>
     <button class="menu-link" data-tab="stringinfo">String</button>
+    <button class="menu-link" data-tab="randompassword">Random Password</button>
     <button class="menu-link" data-tab="misc">Misc</button>
   </div>
   <div class="sidebar-footer">
     <button id="darkToggle" class="toggle-btn">🌙</button>
   </div>
+</aside> -->
+
+<!-- Sidebar Pro -->
+<aside id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <h2>DevWeb Tools</h2>
+    <button id="sidebarToggle" class="toggle-btn" title="Collapse sidebar">☰</button>
+  </div>
+
+<div class="menu">
+  <div class="menu-group">
+    <div class="menu-group-header">🧩 JSON & Data</div>
+    <div class="menu-group-content">
+      <button class="menu-link" data-tab="json">JSON</button>
+      <button class="menu-link" data-tab="jsonpath">JSONPath</button>
+      <button class="menu-link" data-tab="yaml">YAML / JSON</button>
+      <button class="menu-link" data-tab="compare">Compare</button>
+    </div>
+  </div>
+
+  <div class="menu-group">
+    <div class="menu-group-header">🔐 Encoding</div>
+    <div class="menu-group-content">
+      <button class="menu-link" data-tab="format">Format</button>
+      <button class="menu-link" data-tab="encoder">Encoder</button>
+      <button class="menu-link" data-tab="converter">Converter</button>
+      <button class="menu-link" data-tab="gzip">GZIP / Deflate</button>
+    </div>
+  </div>
+
+  <div class="menu-group">
+    <div class="menu-group-header">⚙️ Generators</div>
+    <div class="menu-group-content">
+      <button class="menu-link" data-tab="time">Time</button>
+      <button class="menu-link" data-tab="uuid">UUID</button>
+      <button class="menu-link" data-tab="qrcode">QR Code</button>
+      <button class="menu-link" data-tab="randompassword">Random Password</button>
+    </div>
+  </div>
+
+  <div class="menu-group">
+    <div class="menu-group-header">📝 Text & Tools</div>
+    <div class="menu-group-content">
+      <button class="menu-link" data-tab="markdown">Markdown</button>
+      <button class="menu-link" data-tab="textutils">Text Utils</button>
+      <button class="menu-link" data-tab="stringinfo">String Info</button>
+      <button class="menu-link" data-tab="color">Color</button>
+      <button class="menu-link" data-tab="image-compressor">Image Compress</button>
+    </div>
+  </div>
+
+  <div class="menu-group">
+    <div class="menu-group-header">🧠 Misc</div>
+    <div class="menu-group-content">
+      <button class="menu-link" data-tab="regex">Regex</button>
+      <button class="menu-link" data-tab="cron">Cron</button>
+      <button class="menu-link" data-tab="jwt">JWT</button>
+      <button class="menu-link" data-tab="misc">Misc</button>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="sidebar-footer">
+    <button id="darkToggle" class="toggle-btn" title="Toggle dark mode">🌙</button>
+  </div>
 </aside>
+
+
 
 
 
@@ -52,6 +128,7 @@
     <button id="sidebarToggle" class="toggle-btn">☰</button>
   </div>
   <div class="menu">
+      <button class="menu-link active" data-tab="json">JSON</button>
       <button class="menu-link active" data-tab="json">JSON</button>
       <button class="menu-link" data-tab="compare">Compare</button>
       <button class="menu-link" data-tab="encoder">Encoder</button>
@@ -100,8 +177,37 @@
 		<button class="copy-btn" onclick="copyToClipboard('outputJson', this)">📋</button>
 	</div>
 	<div id="treeView" class="box-output mono"></div>
-
     </section>
+
+
+
+<!-- JSONPath Evaluator -->
+<section id="jsonpath" class="tab-content">
+  <h2>JSONPath Evaluator</h2>
+
+  <!-- JSON input -->
+  <div class="textarea-container">
+    <textarea id="jsonPathInput" placeholder="Paste your JSON here..."></textarea>
+    <input type="file" id="jsonPathFile" />
+  </div>
+
+  <!-- JSONPath query -->
+  <input type="text" id="jsonPathQuery" placeholder="Enter JSONPath query (e.g., $.store.book[0].title)" />
+
+  <div class="button-group">
+    <button onclick="evaluateJsonPath()">Evaluate</button>
+    <button onclick="clearJsonPath()">Clear</button>
+  </div>
+
+  <!-- Result -->
+  <div class="textarea-container">
+    <textarea id="jsonPathResult" placeholder="Result will appear here..." readonly></textarea>
+  </div>
+  <button class="copy-btn" onclick="copyToClipboard('jsonPathResult', this)">📋</button>
+</section>
+
+
+
 
     <!-- Compare Tools -->
     <section id="compare" class="tab-content">
@@ -172,15 +278,17 @@
     <section id="format" class="tab-content">
       <h2>Format</h2>
 		<textarea id="convInput"></textarea>
-		<button onclick="uiCsvToJson('convInput','convOutput')">CSV → JSON</button>
-		<button onclick="uiJsonToCsv('convInput','convOutput')">JSON → CSV</button>
+    <div class="button-group">
+      <button onclick="uiCsvToJson('convInput','convOutput')">CSV → JSON</button>
+      <button onclick="uiJsonToCsv('convInput','convOutput')">JSON → CSV</button>
 
-		<button onclick="uiXmlToJson('convInput','convOutput')">XML → JSON</button>
-		<button onclick="uiJsonToXml('convInput','convOutput','root')">JSON → XML</button>
+      <button onclick="uiXmlToJson('convInput','convOutput')">XML → JSON</button>
+      <button onclick="uiJsonToXml('convInput','convOutput','root')">JSON → XML</button>
 
-		<button onclick="uiFormat('js','convInput','convOutput')">Format JS</button>
-		<button onclick="uiMinify('js','convInput','convOutput')">Minify JS</button>
-<textarea id="convOutput"></textarea>
+      <button onclick="uiFormat('js','convInput','convOutput')">Format JS</button>
+      <button onclick="uiMinify('js','convInput','convOutput')">Minify JS</button>
+    </div>
+   <textarea id="convOutput"></textarea>
 
 	  <button class="copy-btn" onclick="copyToClipboard('converterOutput', this)">📋</button>
     </section>
@@ -277,8 +385,11 @@
 <section id="yaml" class="tab-content">
   <h2>YAML ⇆ JSON Converter</h2>
   <textarea id="yamlInput" placeholder="Paste YAML or JSON"></textarea>
-  <button onclick="yamlToJson()">YAML → JSON</button>
-  <button onclick="jsonToYaml()">JSON → YAML</button>
+  <div class="button-group">
+    <button onclick="yamlToJson()">YAML → JSON</button>
+    <button onclick="jsonToYaml()">JSON → YAML</button>
+  </div>
+  
   <textarea id="yamlOutput" readonly></textarea>
   <button class="copy-btn" onclick="copyToClipboard('yamlOutput', this)">📋</button>
 </section>
@@ -287,8 +398,11 @@
 <section id="time" class="tab-content">
   <h2>Epoch / DateTime Converter</h2>
   <textarea id="timeInput" placeholder="Epoch or DateTime"></textarea>
-  <button onclick="epochToDate()">Epoch → Date</button>
-  <button onclick="dateToEpoch()">Date → Epoch</button>
+  <div class="button-group">
+      <button onclick="epochToDate()">Epoch → Date</button>
+      <button onclick="dateToEpoch()">Date → Epoch</button>
+  </div>
+
   <div id="timeResult"></div>
   <button class="copy-btn" onclick="copyToClipboard('timeResult', this)">📋</button>
 </section>
@@ -297,7 +411,7 @@
 <section id="textutils" class="tab-content">
   <h2>Text Utilities</h2>
   <textarea id="textUtilsInput" placeholder="Enter text here"></textarea>
-  <div>
+ <div class="button-group">
     <button onclick="toUpper()">UPPERCASE</button>
     <button onclick="toLower()">lowercase</button>
     <button onclick="toSnake()">snake_case</button>
@@ -309,22 +423,177 @@
   <button class="copy-btn" onclick="copyToClipboard('textUtilsOutput', this)">📋</button>
 </section>
 
-<!-- Color Tools -->
+
+
+<!-- Color Tools / Palette -->
 <section id="color" class="tab-content">
-  <h2>Color Tools</h2>
+  <h2>Color Tools & Palette</h2>
+
+  <!-- Input warna -->
   <input type="text" id="colorInput" placeholder="#ff0000 or rgb(255,0,0)">
-  <button onclick="convertColor()">Convert</button>
+
+  <!-- Convert / Generate palette -->
+  <div class="button-group">
+     <select id="paletteType">
+      <option value="analogous">Analogous</option>
+      <option value="complementary">Complementary</option>
+      <option value="triadic">Triadic</option>
+      <option value="tetradic">Tetradic</option>
+    </select>
+    <button onclick="convertColor()">Convert</button>
+    <button onclick="generatePalette()">Generate Palette</button>
+    <button id="downloadPaletteBtn">Download PNG</button>
+  </div>
+
+  <!-- Preview warna -->
   <div id="colorResult"></div>
+
+  <!-- Optional: gradient -->
+  <div id="colorGradient"></div>
 </section>
+
 
 <!-- String Inspector -->
 <section id="stringinfo" class="tab-content">
   <h2>String Inspector</h2>
   <textarea id="stringInput" placeholder="Enter text here"></textarea>
-  <button onclick="inspectString()">Inspect</button>
+  <div class="button-group">
+    <button onclick="inspectString()">Inspect</button>
+  </div>
+  
   <div id="stringResult"></div>
   <button class="copy-btn" onclick="copyToClipboard('stringResult', this)">📋</button>
 </section>
+
+
+<!-- QR Code Generator -->
+<section id="qrcode" class="tab-content">
+  <h2>QR Code Generator</h2>
+
+  <textarea id="qrText" placeholder="Enter text or URL..."></textarea>
+
+  <label>Size: <input type="number" id="qrSizeInput" value="256" min="64" max="1024"> px</label>
+  <label>Error Correction: 
+    <select id="qrECL">
+      <option value="L">L (7%)</option>
+      <option value="M" selected>M (15%)</option>
+      <option value="Q">Q (25%)</option>
+      <option value="H">H (30%)</option>
+    </select>
+  </label>
+
+  <label>Foreground: <input type="color" id="qrFg" value="#000000"/></label>
+  <label>Background: <input type="color" id="qrBg" value="#ffffff"/></label>
+
+  <div class="button-group">
+    <button id="generateQRBtn">Generate QR</button>
+    <button id="downloadQRBtn">Download PNG</button>
+  </div>
+
+  <div id="qrCanvas"></div>
+</section>
+
+
+<!-- Markdown Preview -->
+<section id="markdown" class="tab-content">
+  <h2>Markdown Preview</h2>
+
+  <div class="markdown-container">
+    <!-- Editor -->
+    <div class="markdown-editor">
+      <textarea id="mdInput" placeholder="Write Markdown here..."></textarea>
+    </div>
+
+    <!-- Preview -->
+    <div class="markdown-preview" id="mdPreview">
+      <em>Live preview will appear here...</em>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<!-- Image Compression -->
+<section id="image-compressor" class="tab-content">
+  <h2>Image Compressor</h2>
+  <input type="file" id="imgFileInput" accept="image/*" />
+  <label>Quality: <input type="number" id="imgQualityInput" min="0.1" max="1" step="0.05" value="0.8"></label>
+  <label>Max Width: <input type="number" id="imgMaxWidth" value="1024"></label>
+  <label>Max Height: <input type="number" id="imgMaxHeight" value="1024"></label>
+  <div class="button-group">
+    <button id="compressBtn">Compress</button>
+    <button id="downloadImgBtn">Download PNG</button>
+  </div>
+  <div id="imgPreview"></div>
+</section>
+
+
+<!-- GZIP / Deflate -->
+<section id="gzip" class="tab-content">
+  <h2>GZIP / Deflate</h2>
+
+  <!-- Text mode -->
+  <h2>Text Mode</h2>
+  <textarea id="gzipTextInput" placeholder="Enter text here..."></textarea>
+  <textarea id="gzipTextOutput" placeholder="Compressed / Decompressed output..." readonly></textarea>
+  <div class="button-group">
+    <button id="gzipTextCompressBtn">Compress Text</button>
+    <button id="gzipTextDecompressBtn">Decompress Text</button>
+    <button id="gzipTextDownloadBtn">Download Text</button>
+  </div>
+
+  <hr>
+
+  <!-- File mode -->
+  <h2>File Mode</h2>
+  <input type="file" id="gzipFileInput" />
+  <div class="button-group">
+    <button id="gzipFileCompressBtn">Compress File</button>
+    <button id="gzipFileDecompressBtn">Decompress File</button>
+  </div>
+  <div id="gzipFileInfo"></div>
+</section>
+
+
+
+<!-- Random String / Password Generator -->
+<section id="randompassword" class="tab-content">
+  <h2>Random String / Password Generator</h2>
+
+  <div class="random-container">
+    <div class="random-options">
+      <label>
+        Length:
+        <input type="number" id="randLength" min="4" max="128" value="16">
+      </label>
+
+      <div class="checkboxes">
+        <label><input type="checkbox" id="includeLower" checked> a-z</label>
+        <label><input type="checkbox" id="includeUpper" checked> A-Z</label>
+        <label><input type="checkbox" id="includeNum" checked> 0-9</label>
+        <label><input type="checkbox" id="includeSym" checked> !@#$%^&*</label>
+      </div>
+    </div>
+
+    <div class="random-output">
+      <input id="randOutput" readonly placeholder="Your generated password...">
+      <div class="button-group">  
+        <button id="copyRandBtn">Copy</button>
+      </div>
+    </div>
+
+    <!-- Strength meter -->
+    <div class="strength-meter">
+      <div id="strengthBar"></div>
+      <span id="strengthLabel">Weak</span>
+    </div>
+<div class="button-group"> 
+    <button id="generateRandBtn">Generate</button>
+  </div>
+</section>
+
 
 
 
@@ -392,10 +661,22 @@
   <script src="./js/index.js"></script>
 
   <!-- yaml json v4.1.1 -->
-  <script src="./js/component/js-yaml.min.js"></script>
+  <script src="./js/lib/js-yaml.min.js"></script> <!-- buat json to yaml offline -->
+   <script src="./js/lib/qrcode.min.js"></script> <!-- buat qrcode offline -->
+   <script src="./js/lib/browser-image-compression.min.js"></script> <!-- v1.0.9 offline -->
+    <script src="./js/lib/pako.min.js"></script> <!-- buat gzip offline -->
+     <script src="./js/lib/marked.min.js"></script> <!-- buat markup offline -->
+     <script src="./js/lib/highlight.min.js"></script> <!-- buat markup offline -->
 
+   
    <script src="./js/component/hash-fallback.js"></script>
 
    <script src="./js/component/formatter.js"></script>
+
+    <script src="./js/component/qrgenerator.js"></script>
+    <script src="./js/component/imagecompression.js"></script>
+    <script src="./js/component/gzip.js"></script>
+    <script src="./js/component/markdown.js"></script>
+    <script src="./js/component/randompassword.js"></script>
 </body>
 </html>
