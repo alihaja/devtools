@@ -11,7 +11,7 @@
    MD5 (RFC 1321) - compact JS
    Source approach: canonical JS implementation (public domain style)
 ------------------------- */
-function md5(input) {
+
   // convert string to little-endian words array
   function toWords(str) {
     var n = str.length;
@@ -165,8 +165,7 @@ function md5(input) {
     return s;
   }
 
-  return toHexLe(a0) + toHexLe(b0) + toHexLe(c0) + toHexLe(d0);
-}
+  // return toHexLe(a0) + toHexLe(b0) + toHexLe(c0) + toHexLe(d0);
 
 /* -------------------------
    SHA-1 (pure JS, straightforward)
