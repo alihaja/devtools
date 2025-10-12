@@ -478,6 +478,42 @@ select, input { height: 40px; }
 /* ============================
    Compare Section
 ============================ */
+/* warna dasar teks hasil compare */
+.compare-table pre {
+  color: #e4e4e4; /* teks normal */
+  background: #1e1e1e; /* biar mirip tema VSCode / DiffChecker */
+  padding: 6px;
+  white-space: pre-wrap;
+  border-radius: 6px;
+}
+
+/* baris yang berbeda */
+.compare-row.diff pre {
+  background: #252526;
+}
+
+/* highlight perbedaan */
+.removed {
+  background-color: rgba(255, 0, 0, 0.25);
+  color: #ffaaaa;
+  text-decoration: line-through;
+}
+
+.added {
+  background-color: rgba(0, 200, 0, 0.25);
+  color: #aaffaa;
+}
+
+/* biar kolom seimbang */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+
 .compare-table {
   display: grid;
   grid-template-columns: 1fr;
@@ -794,5 +830,7 @@ pre {
 .random-container button {
   cursor: pointer;
 }
+
+
 
 
