@@ -264,34 +264,52 @@ window.runCompare = function () {
   }
 
   // ===== TEXT / QUERY COMPARE =====
-  const left = caseSensitive ? a : a.toLowerCase();
-  const right = caseSensitive ? b : b.toLowerCase();
-  const leftLines = left.split(/\r?\n/);
-  const rightLines = right.split(/\r?\n/);
-  const max = Math.max(leftLines.length, rightLines.length);
+const left = caseSensitive ? a : a.toLowerCase();
+const right = caseSensitive ? b : b.toLowerCase();
+const leftLines = left.split(/\r?\n/);
+const rightLines = right.split(/\r?\n/);
+const max = Math.max(leftLines.length, rightLines.length);
 
-  let html = `<div class="compare-table">
-    <div class="compare-header"><div>Text 1</div><div>Text 2</div></div>`;
+const dmp = new diff_match_patch();
 
-  for (let i = 0; i < max; i++) {
-    const L = leftLines[i] || "";
-    const R = rightLines[i] || "";
-    const diff = L !== R;
-    if (onlyDiff && !diff) continue;
+let html = `<div class="compare-table">
+  <div class="compare-header"><div>Text 1</div><div>Text 2</div></div>`;
 
-    const highlightedL = diff ? highlightDiff(L, R) : escapeHtml(L);
-    const highlightedR = diff ? highlightDiff(R, L) : escapeHtml(R);
+for (let i = 0; i < max; i++) {
+  const L = leftLines[i] || "";
+  const R = rightLines[i] || "";
 
-    html += `
-      <div class="compare-row${diff ? " diff" : ""}">
-        <pre class="left">${highlightedL}</pre>
-        <pre class="right">${highlightedR}</pre>
-      </div>`;
+  const diffs = dmp.diff_main(L, R);
+  dmp.diff_cleanupSemantic(diffs);
+
+  const isDiff = diffs.some(([op]) => op !== 0);
+  if (onlyDiff && !isDiff) continue;
+
+  // Bagi hasil diff ke kiri dan kanan
+  let leftHTML = "";
+  let rightHTML = "";
+  for (const [op, data] of diffs) {
+    const safe = escapeHtml(data);
+    if (op === 0) {
+      leftHTML += safe;
+      rightHTML += safe;
+    } else if (op === -1) {
+      leftHTML += `<span class="removed">${safe}</span>`;
+    } else if (op === 1) {
+      rightHTML += `<span class="added">${safe}</span>`;
+    }
   }
 
-  html += "</div>";
-  $("compareResult").innerHTML = html || "<pre>No differences</pre>";
-};
+  html += `
+    <div class="compare-row${isDiff ? " diff" : ""}">
+      <pre class="left">${leftHTML || "&nbsp;"}</pre>
+      <pre class="right">${rightHTML || "&nbsp;"}</pre>
+    </div>`;
+}
+
+html += "</div>";
+$("compareResult").innerHTML = html || "<pre>No differences</pre>";
+}
 
 window.clearCompare = function () {
   $("compareInput1").value = "";
@@ -299,20 +317,53 @@ window.clearCompare = function () {
   $("compareResult").innerHTML = "";
 };
 
+
+// function highlightDiff(source, compareTo) {
+//   const src = source.split("");
+//   const cmp = compareTo.split("");
+//   let result = "";
+//   const maxLen = Math.max(src.length, cmp.length);
+//   for (let i = 0; i < maxLen; i++) {
+//     if (src[i] !== cmp[i]) {
+//       result += `<span class="char-diff">${escapeHtml(src[i] || "")}</span>`;
+//     } else {
+//       result += escapeHtml(src[i] || "");
+//     }
+//   }
+//   return result;
+// }
+
+
 function highlightDiff(source, compareTo) {
-  const src = source.split("");
-  const cmp = compareTo.split("");
-  let result = "";
-  const maxLen = Math.max(src.length, cmp.length);
+  // tokenize per kata/tanda baca/spasi
+  const tokenize = (str) => str.split(/(\s+|[,();=<>])/).filter(Boolean);
+
+  const srcTokens = tokenize(source);
+  const cmpTokens = tokenize(compareTo);
+
+  const maxLen = Math.max(srcTokens.length, cmpTokens.length);
+  let leftHTML = "";
+  let rightHTML = "";
+
   for (let i = 0; i < maxLen; i++) {
-    if (src[i] !== cmp[i]) {
-      result += `<span class="char-diff">${escapeHtml(src[i] || "")}</span>`;
+    const s = srcTokens[i] || "";
+    const c = cmpTokens[i] || "";
+
+    if (s === c) {
+      leftHTML += escapeHtml(s);
+      rightHTML += escapeHtml(c);
     } else {
-      result += escapeHtml(src[i] || "");
+      if (s) leftHTML += `<span class="removed">${escapeHtml(s)}</span>`;
+      if (c) rightHTML += `<span class="added">${escapeHtml(c)}</span>`;
     }
   }
-  return result;
+
+  // return dua kolom untuk compareText
+  return [leftHTML, rightHTML];
 }
+
+
+
 
 function escapeHtml(str) {
   if (str === undefined) return "";
@@ -484,22 +535,24 @@ function clearRegex() {
 ====================================================== */
 window.sha256Hash = async function () {
   const text = $("hashInput").value;
+  const normalized = text.replace(/\r\n/g, "\n"); // normalize line endings
   let hashHex = "";
 
   if (window.crypto && window.crypto.subtle) {
-    // Modern browser + HTTPS
     const encoder = new TextEncoder();
-    const data = encoder.encode(text);
+    const data = encoder.encode(normalized);
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   } else {
-    // Fallback SHA-256 (pure JS, jalan di HTTP juga)
-    hashHex = sha256Fallback(text);
+    hashHex = sha256Fallback(normalized);
   }
 
   $("hashOutput").value = hashHex;
 };
+
+
+
 
 window.clearMisc = function () {
   $("hashInput").value = "";
@@ -510,87 +563,91 @@ window.clearMisc = function () {
    Pure JS SHA-256 Fallback
    (based on Stanford JS Crypto library)
 ====================================================== */
-function sha256Fallback(ascii) {
-  function rightRotate(value, amount) {
-    return (value >>> amount) | (value << (32 - amount));
-  }
+// function sha256Fallback(ascii) {
+//   function rightRotate(value, amount) {
+//     return (value >>> amount) | (value << (32 - amount));
+//   }
 
-  var mathPow = Math.pow;
-  var maxWord = mathPow(2, 32);
-  var lengthProperty = 'length';
-  var i, j; // Used as a counter across the whole file
-  var result = '';
+//   var mathPow = Math.pow;
+//   var maxWord = mathPow(2, 32);
+//   var lengthProperty = 'length';
+//   var i, j; // Used as a counter across the whole file
+//   var result = '';
 
-  var words = [];
-  var asciiBitLength = ascii[lengthProperty] * 8;
+//   var words = [];
+//   var asciiBitLength = ascii[lengthProperty] * 8;
 
-  var hash = sha256Fallback.h = sha256Fallback.h || [];
-  var k = sha256Fallback.k = sha256Fallback.k || [];
-  var primeCounter = k[lengthProperty];
+//   var hash = sha256Fallback.h = sha256Fallback.h || [];
+//   var k = sha256Fallback.k = sha256Fallback.k || [];
+//   var primeCounter = k[lengthProperty];
 
-  var isComposite = {};
-  for (var candidate = 2; primeCounter < 64; candidate++) {
-    if (!isComposite[candidate]) {
-      for (i = 0; i < 313; i += candidate) {
-        isComposite[i] = candidate;
-      }
-      hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
-      k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;
-    }
-  }
+//   var isComposite = {};
+//   for (var candidate = 2; primeCounter < 64; candidate++) {
+//     if (!isComposite[candidate]) {
+//       for (i = 0; i < 313; i += candidate) {
+//         isComposite[i] = candidate;
+//       }
+//       hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+//       k[primeCounter++] = (mathPow(candidate, 1/3) * maxWord) | 0;
+//     }
+//   }
 
-  ascii += '\x80'; // Append Ƈ' bit (plus zero padding)
-  while (ascii[lengthProperty] % 64 - 56) ascii += '\x00'; // More zero padding
-  for (i = 0; i < ascii[lengthProperty]; i++) {
-    j = ascii.charCodeAt(i);
-    if (j >> 8) return; // ASCII check
-    words[i >> 2] |= j << ((3 - i) % 4) * 8;
-  }
-  words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
-  words[words[lengthProperty]] = (asciiBitLength);
+//   ascii += '\x80'; // Append Ƈ' bit (plus zero padding)
+//   while (ascii[lengthProperty] % 64 - 56) ascii += '\x00'; // More zero padding
+//   for (i = 0; i < ascii[lengthProperty]; i++) {
+//     j = ascii.charCodeAt(i);
+//     if (j >> 8) return; // ASCII check
+//     words[i >> 2] |= j << ((3 - i) % 4) * 8;
+//   }
+//   words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+//   words[words[lengthProperty]] = (asciiBitLength);
 
-  for (j = 0; j < words[lengthProperty];) {
-    var w = words.slice(j, j += 16);
-    var oldHash = hash;
-    // This is now the undefinedworking hash", often labelled as variables a...g
-    hash = hash.slice(0, 8);
+//   for (j = 0; j < words[lengthProperty];) {
+//     var w = words.slice(j, j += 16);
+//     var oldHash = hash;
+//     // This is now the undefinedworking hash", often labelled as variables a...g
+//     hash = hash.slice(0, 8);
 
-    for (i = 0; i < 64; i++) {
-      var w15 = w[i - 15], w2 = w[i - 2];
+//     for (i = 0; i < 64; i++) {
+//       var w15 = w[i - 15], w2 = w[i - 2];
 
-      var a = hash[0], e = hash[4];
-      var temp1 = hash[7]
-        + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
-        + ((e & hash[5]) ^ ((~e) & hash[6]))
-        + k[i]
-        + (w[i] = (i < 16) ? w[i] : (
-          w[i - 16]
-          + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
-          + w[i - 7]
-          + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
-        ) | 0
-        );
+//       var a = hash[0], e = hash[4];
+//       var temp1 = hash[7]
+//         + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+//         + ((e & hash[5]) ^ ((~e) & hash[6]))
+//         + k[i]
+//         + (w[i] = (i < 16) ? w[i] : (
+//           w[i - 16]
+//           + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+//           + w[i - 7]
+//           + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+//         ) | 0
+//         );
 
-      var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
-        + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+//       var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+//         + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
 
-      hash = [(temp1 + temp2) | 0].concat(hash);
-      hash[4] = (hash[4] + temp1) | 0;
-    }
+//       hash = [(temp1 + temp2) | 0].concat(hash);
+//       hash[4] = (hash[4] + temp1) | 0;
+//     }
 
-    for (i = 0; i < 8; i++) {
-      hash[i] = (hash[i] + oldHash[i]) | 0;
-    }
-  }
+//     for (i = 0; i < 8; i++) {
+//       hash[i] = (hash[i] + oldHash[i]) | 0;
+//     }
+//   }
 
-  for (i = 0; i < 8; i++) {
-    for (j = 3; j + 1; j--) {
-      var b = (hash[i] >> (j * 8)) & 255;
-      result += ((b < 16) ? 0 : '') + b.toString(16);
-    }
-  }
-  return result;
+//   for (i = 0; i < 8; i++) {
+//     for (j = 3; j + 1; j--) {
+//       var b = (hash[i] >> (j * 8)) & 255;
+//       result += ((b < 16) ? 0 : '') + b.toString(16);
+//     }
+//   }
+//   return result;
+// }
+function sha256Fallback(str) {
+  return CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(str)).toString(CryptoJS.enc.Hex);
 }
+
 
 
 /* ======================================================
@@ -1495,7 +1552,8 @@ async function generateHash() {
             .join("");
         } else if (algo === "md5") {
           // fallback
-          hashValue = md5(text);
+          const normalized = text.replace(/\r\n/g, "\n"); // normalize line endings
+          hashValue = md5(normalized);
         }
       } else {
         // fallback manual
@@ -1578,9 +1636,12 @@ async function hmacSha256(message, key) {
    Untuk akurasi full, sebaiknya load implementasi murni.
 ====================================================== */
 function md5(str) {
-  // placeholder MD5 fallback (ringan)
-  return hexFallback(str, "MD5");
+  // normalisasi line ending (untuk multi-line, optional)
+  const normalized = str.replace(/\r\n/g, "\n");
+  return CryptoJS.MD5(CryptoJS.enc.Utf8.parse(normalized)).toString(CryptoJS.enc.Hex);
 }
+
+
 function sha1(str) {
   return hexFallback(str, "SHA1");
 }
@@ -1800,3 +1861,15 @@ function jsonPathEvaluate(obj, path) {
   traverse(obj, pathTokens);
   return result;
 }
+
+const algoSelect = document.getElementById("hashAlgo");
+const hmacKeyInput = document.getElementById("hmacKey");
+
+algoSelect.addEventListener("change", () => {
+  if (algoSelect.value === "hmac") {
+    hmacKeyInput.style.display = "inline-block"; // tampilkan input
+  } else {
+    hmacKeyInput.style.display = "none"; // sembunyikan input
+  }
+});
+
