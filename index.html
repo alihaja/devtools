@@ -60,6 +60,7 @@
     <div class="menu-group-header">🧩 JSON & Data</div>
     <div class="menu-group-content">
       <button class="menu-link" data-tab="json">JSON</button>
+      <button class="menu-link" data-tab="query">Query</button>
       <button class="menu-link" data-tab="jsonpath">JSONPath</button>
       <button class="menu-link" data-tab="yaml">YAML / JSON</button>
       <button class="menu-link" data-tab="compare">Compare</button>
@@ -162,7 +163,7 @@
 
     <!-- JSON Tools -->
     <section id="json" class="tab-content active">
-      <h2>JSON Tools</h2>
+      <h2>JSON Beautifier</h2>
       <div class="textarea-container">
         <textarea id="inputJson" placeholder="Paste JSON here..."></textarea>
       </div>
@@ -178,6 +179,26 @@
 	</div>
 	<div id="treeView" class="box-output mono"></div>
     </section>
+
+<!-- Query Tools -->
+<section id="query" class="tab-content">
+  <h2>SQL Beautifier</h2>
+
+  <div class="textarea-container">
+    <textarea id="sqlInput" placeholder="Paste SQL here..."></textarea>
+  </div>
+
+  <div class="button-group">
+    <button onclick="beautifySql()">Beautify</button>
+    <button onclick="minifySql()">Minify</button>
+    <button onclick="clearSql()">Clear</button>
+  </div>
+
+  <div class="textarea-container">
+    <textarea id="sqlOutput" placeholder="Output..."></textarea>
+    <button class="copy-btn" onclick="copyToClipboard('sqlOutput', this)">📋</button>
+  </div>
+</section>
 
 
 
@@ -657,8 +678,11 @@
 
   </main>
 
+  <script src="./js/lib/sql-formatter.min.js"></script>
+<script src="./js/component/sql-formatter.js"></script>
 
-  <script src="./js/index.js"></script>
+
+ 
 
   <!-- yaml json v4.1.1 -->
   <script src="./js/lib/js-yaml.min.js"></script> <!-- buat json to yaml offline -->
@@ -679,5 +703,8 @@
     <script src="./js/component/gzip.js"></script>
     <script src="./js/component/markdown.js"></script>
     <script src="./js/component/randompassword.js"></script>
+
+
+     <script src="./js/index.js"></script>
 </body>
 </html>
