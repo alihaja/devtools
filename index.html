@@ -64,6 +64,7 @@
       <button class="menu-link" data-tab="jsonpath">JSONPath</button>
       <button class="menu-link" data-tab="yaml">YAML / JSON</button>
       <button class="menu-link" data-tab="compare">Compare</button>
+      <button class="menu-link" data-tab="comparequery">Compare Query</button>
     </div>
   </div>
 
@@ -265,6 +266,36 @@
 	<button class="copy-btn" onclick="copyToClipboard('compareResult', this)">📋</button>
 
     </section>
+
+
+      <!-- Compare Query Tools -->
+    <section id="comparequery" class="tab-content">
+      <h2>SQL Compare Tools</h2>
+
+      <div class="form-options">
+        <label><input type="checkbox" id="caseSensitiveTextQuery"> Case sensitive</label>
+        <label><input type="checkbox" id="onlyDiffQuery"> Show only differences</label>
+      </div>
+
+      <div class="two-col">
+        <div class="textarea-container">
+          <textarea id="compareInputQuery1" placeholder="Enter first query..."></textarea>
+        </div>
+        <div class="textarea-container">
+          <textarea id="compareInputQuery2" placeholder="Enter second query..."></textarea>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button onclick="runCompareQuery()">Compare</button>
+        <button onclick="clearCompareQuery()">Clear</button>
+      </div>
+
+    <div id="compareResultQuery" class="box-output mono"></div>
+	<button class="copy-btn" onclick="copyToClipboard('compareResultQuery', this)">📋</button>
+
+    </section>
+
 
     <!-- Encoder -->
     <section id="encoder" class="tab-content">
@@ -678,11 +709,9 @@
 
   </main>
 
-  <script src="./js/lib/sql-formatter.min.js"></script>
+  
 <script src="./js/component/sql-formatter.js"></script>
-
-
- 
+<script src="./js/component/compare-query.js"></script>
 
   <!-- yaml json v4.1.1 -->
   <script src="./js/lib/js-yaml.min.js"></script> <!-- buat json to yaml offline -->
@@ -692,7 +721,8 @@
      <script src="./js/lib/marked.min.js"></script> <!-- buat markup offline -->
      <script src="./js/lib/highlight.min.js"></script> <!-- buat highlight offline -->
  <script src="./js/lib/crypto-js.min.js"></script> <!-- buat crypt offline -->
-   
+   <script src="./js/lib/sql-formatter.min.js"></script>
+   <script src="./js/lib/diff.min.js"></script>
    <script src="./js/component/diff.js"></script>
    <script src="./js/component/hash-fallback.js"></script>
 
