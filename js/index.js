@@ -52,11 +52,63 @@ function fallbackCopy(text, icon) {
 
 
 // Remove comments from JSON (support // and /* ... */)
+// function stripJsonComments(json) {
+//   return json
+//     .replace(/\/\*[\s\S]*?\*\//g, "") // block comments
+//     .replace(/\/\/.*$/gm, ""); // line comments
+// }
+
 function stripJsonComments(json) {
-  return json
-    .replace(/\/\*[\s\S]*?\*\//g, "") // block comments
-    .replace(/\/\/.*$/gm, ""); // line comments
+  let insideString = false;
+  let insideComment = false;
+  let result = '';
+  
+  for (let i = 0; i < json.length; i++) {
+    const current = json[i];
+    const next = json[i + 1];
+
+    if (!insideComment && current === '"' && json[i - 1] !== '\\') {
+      insideString = !insideString;
+      result += current;
+      continue;
+    }
+
+    if (!insideString) {
+      // Line comment //
+      if (!insideComment && current === '/' && next === '/') {
+        insideComment = 'line';
+        i++; // skip next '/'
+        continue;
+      }
+
+      // Block comment /* */
+      if (!insideComment && current === '/' && next === '*') {
+        insideComment = 'block';
+        i++;
+        continue;
+      }
+
+      if (insideComment === 'line' && (current === '\n' || current === '\r')) {
+        insideComment = false;
+        result += current; // keep newline
+        continue;
+      }
+
+      if (insideComment === 'block' && current === '*' && next === '/') {
+        insideComment = false;
+        i++;
+        continue;
+      }
+
+      if (insideComment) continue;
+    }
+
+    result += current;
+  }
+
+  return result;
 }
+
 
 /* ======================================================
    Sidebar & Dark Mode
