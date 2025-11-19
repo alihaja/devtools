@@ -73,6 +73,7 @@
     <div class="menu-group-content">
       <button class="menu-link" data-tab="format">Format</button>
       <button class="menu-link" data-tab="encoder">Encoder</button>
+      <button class="menu-link" data-tab="certDecoder">Certificate Decoder</button>
       <button class="menu-link" data-tab="converter">Converter</button>
       <button class="menu-link" data-tab="gzip">GZIP / Deflate</button>
     </div>
@@ -297,20 +298,86 @@
     </section>
 
 
-    <!-- Encoder -->
-    <section id="encoder" class="tab-content">
-      <h2>Encoder / Decoder</h2>
-      <div class="textarea-container">
-        <textarea id="encoderInput" placeholder="Enter text..."></textarea>
+  <!-- Encoder -->
+<section id="encoder" class="tab-content">
+  <h2>Encoder / Decoder</h2>
+
+  <div class="textarea-container">
+    <textarea id="encoderInput" placeholder="Enter text..."></textarea>
+  </div>
+
+  <div class="file-container" style="margin-top: 8px;">
+    <label for="encoderFileInput" style="display:block; margin-bottom:4px;">
+      Upload file (optional):
+    </label>
+    <input type="file" id="encoderFileInput" />
+    <small id="fileInfo" style="display:block; margin-top:4px; color:#777;"></small>
+
+    <div class="button-group" style="margin-top: 6px;">
+      <button onclick="encoderBase64FileEncode()" disabled>Base64 Encode File</button>
+      <button onclick="encoderBase64FileDecode()" disabled>Base64 Decode to File</button>
+    </div>
+  </div>
+
+
+  <div class="button-group">
+    <button onclick="base64Encode()">Base64 Encode</button>
+    <button onclick="base64Decode()">Base64 Decode</button>
+    <button onclick="clearEncoder()">Clear</button>
+  </div>
+
+  <textarea id="encoderOutput" placeholder="Output..."></textarea>
+  <button class="copy-btn" onclick="copyToClipboard('encoderOutput', this)">📋</button>
+</section>
+
+
+
+<!-- Certificate Decoder (Full) -->
+<section id="certDecoder" class="tab-content">
+  <h2>Certificate Decoder</h2>
+  <div class="cert-grid">
+    <div class="cert-left">
+      <label for="certFileInput" class="file-label">Upload certificate / PFX or drag & drop here</label>
+      <div id="certDropZone" class="dropzone">
+        <input type="file" id="certFileInput" multiple accept=".pem,.cer,.crt,.der,.p7b,.pfx,.p12" />
+        <div class="drop-instructions">Drop file here or click to choose</div>
       </div>
-      <div class="button-group">
-        <button onclick="base64Encode()">Base64 Encode</button>
-        <button onclick="base64Decode()">Base64 Decode</button>
-        <button onclick="clearEncoder()">Clear</button>
+
+      <label for="certInput" style="display:block; margin-top:8px;">Or paste PEM / Base64 / Hex here:</label>
+      <textarea id="certInput" placeholder="Paste private key + PEM / Base64 / HEX ..." rows="10"></textarea>
+
+      <div style="margin-top:6px;">
+        <label for="pfxPassword">PFX Password (if any):</label>
+        <input type="password" id="pfxPassword" placeholder="Password for .pfx / .p12 (optional)" />
       </div>
-      <textarea id="encoderOutput" placeholder="Output..."></textarea>
-	  <button class="copy-btn" onclick="copyToClipboard('encoderOutput', this)">📋</button>
-    </section>
+
+      <div class="button-group" style="margin-top:8px;">
+        <button id="certDecodeBtn" onclick="certDecoder_decode()" disabled>Decode</button>
+        <button onclick="certDecoder_clear()">Clear</button>
+      </div>
+    </div>
+
+    <div class="cert-right">
+      <div id="certResultsHeader" style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0">Results</h3>
+        <div id="certActions" style="display:none;">
+          <label style="margin-right:6px">Export:</label>
+          <button onclick="certDecoder_export('pem')">PEM</button>
+          <button onclick="certDecoder_export('der')">DER</button>
+        </div>
+      </div>
+
+      <div id="certResults" class="results-box">
+        <div id="certOutput" class="cert-output" style="white-space:pre-wrap; font-family:monospace;"></div>
+        <div id="certChain" style="margin-top:8px; font-family:monospace; max-height:200px; overflow:auto;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
 
     <!-- Converter -->
     <section id="converter" class="tab-content">
@@ -713,6 +780,8 @@
 <script src="./js/component/sql-formatter.js"></script>
 <script src="./js/component/compare-query.js"></script>
 
+ 
+
   <!-- yaml json v4.1.1 -->
   <script src="./js/lib/js-yaml.min.js"></script> <!-- buat json to yaml offline -->
    <script src="./js/lib/qrcode.min.js"></script> <!-- buat qrcode offline -->
@@ -723,6 +792,8 @@
  <script src="./js/lib/crypto-js.min.js"></script> <!-- buat crypt offline -->
    <script src="./js/lib/sql-formatter.min.js"></script>
    <script src="./js/lib/diff.min.js"></script>
+<script src="./js/lib/forge.min.js"></script><!-- node-forge CDN (required for PFX/PKCS7 support) -->
+
    <script src="./js/component/diff.js"></script>
    <script src="./js/component/hash-fallback.js"></script>
 
@@ -733,7 +804,7 @@
     <script src="./js/component/gzip.js"></script>
     <script src="./js/component/markdown.js"></script>
     <script src="./js/component/randompassword.js"></script>
-
+    <script src="./js/component/cert-decoder.js"></script>
 
      <script src="./js/index.js"></script>
 </body>
