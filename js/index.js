@@ -466,10 +466,111 @@ window.base64Decode = function () {
     $("encoderOutput").value = "Invalid Base64!";
   }
 };
+document.getElementById('encoderFileInput').addEventListener('change', function () {
+  const file = this.files[0];
+  document.getElementById('fileInfo').textContent = file
+    ? `File selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`
+    : '';
+});
 window.clearEncoder = function () {
   $("encoderInput").value = "";
   $("encoderOutput").value = "";
 };
+
+// Namespace khusus fitur Base64 Encoder File
+let encoderBase64File = null;
+
+// Listener perubahan file (khusus Base64 encoder)
+document.getElementById('encoderFileInput').addEventListener('change', function () {
+  encoderBase64File = this.files[0] || null;
+
+  const fileInfoEl = document.getElementById('fileInfo');
+  const encodeBtn = document.querySelector('button[onclick="encoderBase64FileEncode()"]');
+  const decodeBtn = document.querySelector('button[onclick="encoderBase64FileDecode()"]');
+
+  if (encoderBase64File) {
+    fileInfoEl.textContent = `File selected: ${encoderBase64File.name} (${(encoderBase64File.size / 1024).toFixed(1)} KB)`;
+    encodeBtn.disabled = false;
+    decodeBtn.disabled = false;
+
+    // Kosongin input textarea supaya lebih jelas user masuk ke file mode
+    document.getElementById('encoderInput').value = '';
+    document.getElementById('encoderInput').placeholder = 'File mode active...';
+  } else {
+    fileInfoEl.textContent = '';
+    encodeBtn.disabled = true;
+    decodeBtn.disabled = true;
+  }
+});
+
+// =========================================
+// Base64 Encode File (encoder namespace)
+// =========================================
+function encoderBase64FileEncode() {
+  if (!encoderBase64File) {
+    alert("Please select a file first!");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const bytes = new Uint8Array(e.target.result);
+    let binary = '';
+    bytes.forEach(b => binary += String.fromCharCode(b));
+
+    const base64String = btoa(binary);
+
+    // Simpan metadata filename
+    const result = JSON.stringify({
+      filename: encoderBase64File.name,
+      content: base64String
+    });
+
+    document.getElementById('encoderOutput').value = result;
+  };
+  reader.readAsArrayBuffer(encoderBase64File);
+}
+
+// =========================================
+// Base64 Decode File (encoder namespace)
+// =========================================
+function encoderBase64FileDecode() {
+  let outputVal = document.getElementById('encoderOutput').value.trim();
+  if (!outputVal) return alert("Output is empty!");
+
+  let fileData;
+  try {
+    fileData = JSON.parse(outputVal);
+  } catch {
+    return alert("Invalid file data format!");
+  }
+
+  try {
+    const binaryStr = atob(fileData.content);
+    const array = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) array[i] = binaryStr.charCodeAt(i);
+
+    const blob = new Blob([array]);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileData.filename || "decoded.bin";
+    link.click();
+  } catch (err) {
+    alert("Error decoding: " + err.message);
+  }
+}
+
+// Reset mode file kalau user ketik manual lagi
+document.getElementById('encoderInput').addEventListener('input', () => {
+  if (encoderBase64File) {
+    encoderBase64File = null;
+    document.getElementById('fileInfo').textContent = '';
+    document.querySelector('button[onclick="encoderBase64FileEncode()"]').disabled = true;
+    document.querySelector('button[onclick="encoderBase64FileDecode()"]').disabled = true;
+  }
+});
+
+
 
 /* ======================================================
    CONVERTER
