@@ -15,7 +15,7 @@ function copyToClipboard(elOrId, icon) {
     navigator.clipboard.writeText(text).then(() => {
       if (icon) {
         const original = icon.textContent;
-        icon.textContent = "✅";
+        icon.textContent = "âœ…";
         setTimeout(() => (icon.textContent = original), 1500);
       }
     }).catch(() => {
@@ -38,11 +38,11 @@ function fallbackCopy(text, icon) {
     document.execCommand("copy");
     if (icon) {
       const original = icon.textContent;
-      icon.textContent = "✅";
+      icon.textContent = "âœ…";
       setTimeout(() => (icon.textContent = original), 1500);
     }
   } catch {
-    alert("❌ Clipboard not available.");
+    alert("âŒ Clipboard not available.");
   }
 
   document.body.removeChild(temp);
@@ -150,8 +150,8 @@ document.querySelectorAll(".menu-link").forEach(btn => {
 $("darkToggle").addEventListener("click", () => {
   document.body.classList.toggle("dark-mode");
   $("darkToggle").textContent = document.body.classList.contains("dark-mode")
-    ? "☀️"
-    : "🌙";
+    ? "â˜€ï¸"
+    : "ðŸŒ™";
 });
 
 $("sidebarToggle").addEventListener("click", () => {
@@ -170,7 +170,7 @@ $("sidebarToggle").addEventListener("click", () => {
 
 //   // Add copy button
 //   const btn = document.createElement("button");
-//   btn.textContent = "📋";
+//   btn.textContent = "ðŸ“‹";
 //   btn.classList.add("copy-btn");
 //   btn.addEventListener("click", () => copyToClipboard(ta.value, btn));
 //   wrap.appendChild(btn);
@@ -193,9 +193,9 @@ document.querySelectorAll("textarea").forEach((ta) => {
   ta.parentNode.insertBefore(wrap, ta);
   wrap.appendChild(ta);
 
-  // Tombol copy 📋
+  // Tombol copy ðŸ“‹
   const btn = document.createElement("button");
-  btn.textContent = "📋";
+  btn.textContent = "ðŸ“‹";
   btn.classList.add("copy-btn");
   btn.addEventListener("click", () => copyToClipboard(ta, btn));
   wrap.appendChild(btn);
@@ -628,7 +628,7 @@ function regexTest() {
   groupBox.innerHTML = "";
 
   if (!pattern) {
-    matchesBox.textContent = "⚠️ Please enter a regex pattern.";
+    matchesBox.textContent = "âš ï¸ Please enter a regex pattern.";
     return;
   }
 
@@ -668,7 +668,7 @@ function regexTest() {
     }
 
   } catch (e) {
-    matchesBox.textContent = "⚠️ Invalid regex pattern.";
+    matchesBox.textContent = "âš ï¸ Invalid regex pattern.";
   }
 }
 
@@ -745,7 +745,7 @@ window.clearMisc = function () {
 //     }
 //   }
 
-//   ascii += '\x80'; // Append Ƈ' bit (plus zero padding)
+//   ascii += '\x80'; // Append Æ‡' bit (plus zero padding)
 //   while (ascii[lengthProperty] % 64 - 56) ascii += '\x00'; // More zero padding
 //   for (i = 0; i < ascii[lengthProperty]; i++) {
 //     j = ascii.charCodeAt(i);
@@ -846,23 +846,27 @@ function sha256Fallback(str) {
 // ================================
 // Sidebar Menu Group Toggle
 // ================================
-(function() {
+(function () {
   document.querySelectorAll('.menu-group-header').forEach(header => {
     header.addEventListener('click', () => {
       const group = header.parentElement;
-      group.classList.toggle('open');
-
-      // Smooth animation
       const content = group.querySelector('.menu-group-content');
-      if (group.classList.contains('open')) {
-        content.style.maxHeight = content.scrollHeight + 'px';
-      } else {
-        content.style.maxHeight = null;
+
+      const isOpen = group.classList.contains('open');
+
+      // tutup semua (optional accordion mode)
+      document.querySelectorAll('.menu-group').forEach(g => {
+        g.classList.remove('open');
+        g.querySelector('.menu-group-content').style.maxHeight = 0;
+      });
+
+      if (!isOpen) {
+        group.classList.add('open');
+        content.style.maxHeight = content.scrollHeight + "px";
       }
     });
   });
 })();
-
 
 
 
@@ -874,14 +878,14 @@ window.parseCron = function () {
   const resultEl = $("cronResult");
 
   if (!input) {
-    resultEl.innerHTML = "<pre>⚠️ Please enter a cron expression.</pre>";
+    resultEl.innerHTML = "<pre>âš ï¸ Please enter a cron expression.</pre>";
     return;
   }
 
   const parts = input.split(/\s+/);
 
   if (parts.length < 5 || parts.length > 7) {
-    resultEl.innerHTML = "<pre>⚠️ Invalid cron format. Must have 5 (UNIX), 6 (with seconds), or 7 parts (with year).</pre>";
+    resultEl.innerHTML = "<pre>âš ï¸ Invalid cron format. Must have 5 (UNIX), 6 (with seconds), or 7 parts (with year).</pre>";
     return;
   }
 
@@ -906,13 +910,13 @@ window.parseCron = function () {
   };
 
   let explanation = `
-Seconds → ${explainPart(sec, "second")}
-Minutes → ${explainPart(min, "minute")}
-Hours   → ${explainPart(hour, "hour")}
-Day     → ${explainPart(day, "day")}
-Month   → ${explainPart(month, "month")}
-Weekday → ${explainPart(weekday, "weekday")}
-Year    → ${year === "*" ? "every year" : year}
+Seconds â†’ ${explainPart(sec, "second")}
+Minutes â†’ ${explainPart(min, "minute")}
+Hours   â†’ ${explainPart(hour, "hour")}
+Day     â†’ ${explainPart(day, "day")}
+Month   â†’ ${explainPart(month, "month")}
+Weekday â†’ ${explainPart(weekday, "weekday")}
+Year    â†’ ${year === "*" ? "every year" : year}
   `;
 
   // generate next runs
@@ -975,7 +979,7 @@ window.generateCron = function({ includeSeconds = true, includeYear = false } = 
   const resultEl = $("cronResult");
 
   if (!dtInput) {
-    resultEl.innerHTML = "<pre>⚠️ Please select a date/time.</pre>";
+    resultEl.innerHTML = "<pre>âš ï¸ Please select a date/time.</pre>";
     return;
   }
 
@@ -1011,7 +1015,7 @@ function generateCronFromPicker() {
   const resultEl = document.getElementById("cronResult");
 
   if (!dtInput) {
-    resultEl.innerHTML = "<pre>⚠️ Please select a date/time.</pre>";
+    resultEl.innerHTML = "<pre>âš ï¸ Please select a date/time.</pre>";
     return;
   }
 
@@ -1098,29 +1102,29 @@ function checkClaims(payload) {
   // Expiration (exp)
   if (payload.exp) {
     if (now > payload.exp) {
-      status.push(`⚠️ Token expired at ${new Date(payload.exp * 1000).toLocaleString()}`);
+      status.push(`âš ï¸ Token expired at ${new Date(payload.exp * 1000).toLocaleString()}`);
     } else {
       const remain = payload.exp - now;
-      status.push(`✅ Expires in ${Math.floor(remain / 60)}m ${remain % 60}s`);
+      status.push(`âœ… Expires in ${Math.floor(remain / 60)}m ${remain % 60}s`);
     }
   }
 
   // Not Before (nbf)
   if (payload.nbf) {
     if (now < payload.nbf) {
-      status.push(`⚠️ Token not valid before ${new Date(payload.nbf * 1000).toLocaleString()}`);
+      status.push(`âš ï¸ Token not valid before ${new Date(payload.nbf * 1000).toLocaleString()}`);
     } else {
-      status.push(`✅ Token is past 'nbf' and valid`);
+      status.push(`âœ… Token is past 'nbf' and valid`);
     }
   }
 
   // Issued At (iat)
   if (payload.iat) {
-    status.push(`ℹ️ Issued at ${new Date(payload.iat * 1000).toLocaleString()}`);
+    status.push(`â„¹ï¸ Issued at ${new Date(payload.iat * 1000).toLocaleString()}`);
   }
 
   if (status.length === 0) {
-    return "ℹ️ No exp/nbf/iat claims found.";
+    return "â„¹ï¸ No exp/nbf/iat claims found.";
   }
   return status.join("\n");
 }
@@ -1140,7 +1144,7 @@ window.decodeJWT = () => {
       "\n\nSignature:\n" + s +
       "\n\n" + claimStatus;
   } catch (err) {
-    $("jwtResult").innerText = "⚠️ Invalid JWT";
+    $("jwtResult").innerText = "âš ï¸ Invalid JWT";
   }
 };
 
@@ -1149,7 +1153,7 @@ window.verifyJWT = async () => {
     const token = $("jwtInput").value.trim();
     const secret = $("jwtSecret").value;
     if (!secret) {
-      $("jwtResult").innerText = "⚠️ Please provide a secret key.";
+      $("jwtResult").innerText = "âš ï¸ Please provide a secret key.";
       return;
     }
     const [h, p, s] = token.split(".");
@@ -1175,11 +1179,11 @@ window.verifyJWT = async () => {
 
     $("jwtResult").innerText = 
       (expectedSig === s 
-        ? "✅ Signature VALID" 
-        : "❌ Signature INVALID\n\nExpected: " + expectedSig + "\nGot: " + s
+        ? "âœ… Signature VALID" 
+        : "âŒ Signature INVALID\n\nExpected: " + expectedSig + "\nGot: " + s
       ) + "\n\n" + claimStatus;
   } catch (err) {
-    $("jwtResult").innerText = "⚠️ Verification failed: " + err.message;
+    $("jwtResult").innerText = "âš ï¸ Verification failed: " + err.message;
   }
 };
 
@@ -1188,7 +1192,7 @@ window.encodeJWT = async () => {
     const payloadText = $("jwtInput").value.trim();
     const secret = $("jwtSecret").value;
     if (!secret) {
-      $("jwtResult").innerText = "⚠️ Please provide a secret key.";
+      $("jwtResult").innerText = "âš ï¸ Please provide a secret key.";
       return;
     }
 
@@ -1214,7 +1218,7 @@ window.encodeJWT = async () => {
 
     $("jwtResult").innerText = data + "." + sig;
   } catch (err) {
-    $("jwtResult").innerText = "⚠️ Encode failed: " + err.message;
+    $("jwtResult").innerText = "âš ï¸ Encode failed: " + err.message;
   }
 };
 
@@ -1228,8 +1232,8 @@ window.clearJWT = () => {
 
 
 /* ======================================================
-   YAML ⇆ JSON
-   (⚠️ butuh jsyaml di index.html)
+   YAML â‡† JSON
+   (âš ï¸ butuh jsyaml di index.html)
 ====================================================== */
 window.yamlToJson = () => {
   try {
@@ -1450,7 +1454,7 @@ function generatePalette() {
 // Helpers
 // ==========================
 
-// Parse input color string → [r,g,b]
+// Parse input color string â†’ [r,g,b]
 function parseColor(str) {
   const div = document.createElement('div');
   div.style.color = str;
@@ -1485,7 +1489,7 @@ function rgbToHsl(r,g,b){
     }
     h*=60;
   }
-  return [h, s, l]; // angka murni 0–1
+  return [h, s, l]; // angka murni 0â€“1
 }
 
 
@@ -1658,7 +1662,7 @@ async function generateHash() {
   const output = document.getElementById("hashOutput");
 
   if (!text.trim()) {
-    output.value = "⚠️ Please enter text.";
+    output.value = "âš ï¸ Please enter text.";
     return;
   }
 
@@ -1670,14 +1674,14 @@ async function generateHash() {
       if (typeof crc32 !== "undefined") {
         hashValue = crc32(text);
       } else {
-        hashValue = "⚠️ CRC32 not implemented.";
+        hashValue = "âš ï¸ CRC32 not implemented.";
       }
     }
 
     // HMAC
     else if (algo === "hmac") {
       if (!key.trim()) {
-        output.value = "⚠️ HMAC requires a secret key.";
+        output.value = "âš ï¸ HMAC requires a secret key.";
         return;
       }
       hashValue = await hmacSha256(text, key);
@@ -1721,7 +1725,7 @@ async function generateHash() {
 
     output.value = hashValue;
   } catch (err) {
-    output.value = "⚠️ Error: " + err.message;
+    output.value = "âš ï¸ Error: " + err.message;
     console.error(err);
   }
 }
@@ -1785,7 +1789,7 @@ async function hmacSha256(message, key) {
 
 /* ======================================================
    SIMPLE FALLBACKS (MD5, SHA1, SHA256, SHA512)
-   ⚠️ NOTE: ini versi ringan, bukan super optimal.
+   âš ï¸ NOTE: ini versi ringan, bukan super optimal.
    Untuk akurasi full, sebaiknya load implementasi murni.
 ====================================================== */
 function md5(str) {
@@ -1824,7 +1828,7 @@ function toBase64() {
   try {
     document.getElementById("strConvOutput").value = btoa(unescape(encodeURIComponent(input || "")));
   } catch {
-    document.getElementById("strConvOutput").value = "⚠️ Gagal encode ke Base64.";
+    document.getElementById("strConvOutput").value = "âš ï¸ Gagal encode ke Base64.";
   }
 }
 
@@ -1833,7 +1837,7 @@ function fromBase64() {
   try {
     document.getElementById("strConvOutput").value = decodeURIComponent(escape(atob(input || "")));
   } catch {
-    document.getElementById("strConvOutput").value = "⚠️ Invalid Base64 string.";
+    document.getElementById("strConvOutput").value = "âš ï¸ Invalid Base64 string.";
   }
 }
 
@@ -1847,7 +1851,7 @@ function toHex() {
 function fromHex() {
   const input = document.getElementById("strConvInput").value.replace(/\s+/g, "");
   if (!/^[0-9a-fA-F]+$/.test(input)) {
-    document.getElementById("strConvOutput").value = "⚠️ Invalid Hex string.";
+    document.getElementById("strConvOutput").value = "âš ï¸ Invalid Hex string.";
     return;
   }
   document.getElementById("strConvOutput").value = input
@@ -1866,7 +1870,7 @@ function toBinary() {
 function fromBinary() {
   const input = document.getElementById("strConvInput").value.trim();
   if (!/^[01\s]+$/.test(input)) {
-    document.getElementById("strConvOutput").value = "⚠️ Invalid binary string.";
+    document.getElementById("strConvOutput").value = "âš ï¸ Invalid binary string.";
     return;
   }
   document.getElementById("strConvOutput").value = input
@@ -2025,4 +2029,3 @@ algoSelect.addEventListener("change", () => {
     hmacKeyInput.style.display = "none"; // sembunyikan input
   }
 });
-
