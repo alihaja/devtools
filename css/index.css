@@ -193,13 +193,7 @@ body.dark-mode .menu-group-header::after {
   display: none;
 }
 
-@media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    z-index: 1000;
-    height: 100%;
-  }
-}
+
 
 
 .sidebar details {
@@ -257,7 +251,7 @@ body.dark-mode .menu-group-header::after {
   background: rgba(0, 0, 0, 0.08);
 }
 
-.sidebar.collapsed details,
+/* .sidebar.collapsed details,
 .sidebar.collapsed summary,
 .sidebar.collapsed .menu-link {
   font-size: 0;
@@ -265,7 +259,7 @@ body.dark-mode .menu-group-header::after {
   overflow: hidden;
   height: 0;
   visibility: hidden;
-}
+} */
 
 
 .sidebar.collapsed {
@@ -322,9 +316,7 @@ body.dark-mode .menu-group-header::after {
   transition: max-height 0.25s ease;
 }
 
-.menu-group.open .menu-group-content {
-  max-height: 500px; /* auto via JS */
-}
+
 
 .sidebar .menu-link {
   display: block;
@@ -592,25 +584,93 @@ body.dark-mode .compare-row {
 }
 
 /* ============================
-   Responsive
+   RESPONSIVE CLEAN (FINAL)
 ============================ */
 @media (max-width: 900px) {
-  .two-col {
-    grid-template-columns: 1fr;
+
+  /* matiin flex biar layout normal */
+  body {
+    display: block;
   }
+
+  /* SIDEBAR OFF-CANVAS */
   .sidebar {
     position: fixed;
-    left: -260px;
     top: 0;
+    left: -260px;
+    width: 260px;
     height: 100%;
-    z-index: 999;
+    z-index: 2000;
+    transition: left 0.3s ease;
   }
+
+  /* sidebar muncul */
   .sidebar.open {
     left: 0;
   }
+
+  /* NONAKTIFKAN collapse di mobile */
+  .sidebar.collapsed {
+    width: 260px;
+  }
+
+  .sidebar.collapsed * {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    height: auto !important;
+  }
+
+  /* tombol toggle selalu kelihatan */
   #sidebarToggle {
-    position: absolute;
-    right: -50px;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 3000;
+  }
+
+  /* content full */
+  .content {
+    width: 100%;
+    padding: 16px;
+  }
+
+  /* grid fix */
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  /* markdown */
+  .markdown-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  /* compare */
+  .compare-header,
+  .compare-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* ACCORDION FIX */
+  .menu-group-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+
+
+  /* pastikan child benar-benar muncul */
+  .menu-group-content .menu-link {
+    display: block !important;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* jangan rusak accordion saat collapsed */
+  .sidebar.collapsed .menu-group-content {
+    max-height: none;
   }
 }
 
@@ -888,5 +948,7 @@ button[disabled] { opacity:0.5; cursor:not-allowed; }
 @media (max-width:900px) {
   .cert-grid { grid-template-columns: 1fr; }
 }
+
+
 
 
