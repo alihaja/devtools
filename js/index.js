@@ -147,11 +147,23 @@ document.querySelectorAll(".menu-link").forEach(btn => {
 
 
 
-$("darkToggle").addEventListener("click", () => {
-  document.body.classList.toggle("dark-mode");
-  $("darkToggle").textContent = document.body.classList.contains("dark-mode")
-    ? "☀️"
-    : "🌙";
+function setTheme(theme) {
+  document.body.classList.toggle("dark-mode", theme === "dark");
+  localStorage.setItem("theme", theme);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("theme") || "light";
+  setTheme(saved);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+
+  document.getElementById("darkToggle").addEventListener("click", () => {
+    const isDark = document.body.classList.contains("dark-mode");
+    setTheme(isDark ? "light" : "dark");
+  });
 });
 
 $("sidebarToggle").addEventListener("click", () => {
